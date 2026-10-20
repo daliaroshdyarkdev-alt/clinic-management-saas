@@ -25,6 +25,8 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
+  // Dev server only: allow HMR when the app is opened via 127.0.0.1.
+  allowedDevOrigins: ["127.0.0.1"],
   turbopack: {
     rules: {
       "*.css": {

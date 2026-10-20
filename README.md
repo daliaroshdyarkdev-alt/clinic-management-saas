@@ -35,6 +35,8 @@ npm run dev:full             # supabase start && next dev
 npx supabase status          # copy API URL + publishable key into .env.local
 ```
 
+**Troubleshooting image pulls.** If `supabase start` fails with Docker Hub `429 Too Many Requests` (common on shared networks), route Docker Hub through Google's public mirror: add `{"registry-mirrors": ["https://mirror.gcr.io"]}` to the Docker daemon config (`/etc/docker/daemon.json`, or Docker Desktop → Settings → Docker Engine), restart Docker and run `npm run dev:full` again.
+
 ## Scripts
 
 | Command | What it does |

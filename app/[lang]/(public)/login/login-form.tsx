@@ -41,7 +41,16 @@ export function LoginForm({
       ) : null}
       <div className="flex flex-col gap-2">
         <Label htmlFor="email">{labels.email}</Label>
-        <Input id="email" name="email" type="email" autoComplete="email" dir="ltr" required />
+        <Input
+          key={state?.email ?? ""}
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          dir="ltr"
+          defaultValue={state?.email}
+          required
+        />
       </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor="password">{labels.password}</Label>

@@ -49,7 +49,9 @@ export function UserMenu({
                 page load, clearing all client state of the signed-out session. */}
             <form method="post" action="/api/auth/sign-out">
               <input type="hidden" name="locale" value={locale} />
-              <DropdownMenuItem asChild>
+              {/* Keep the menu (and this form) mounted on select; closing it first
+                  would detach the form before the browser submits it. */}
+              <DropdownMenuItem asChild onSelect={(event) => event.preventDefault()}>
                 <button type="submit" className="w-full">
                   <LogOut aria-hidden />
                   {signOutLabel}

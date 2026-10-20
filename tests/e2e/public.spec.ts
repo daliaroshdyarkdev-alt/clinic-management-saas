@@ -69,6 +69,8 @@ test.describe("protected routes (invariant 2)", () => {
     await page.getByLabel("Password").fill("not-a-real-password");
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page.getByTestId("login-error")).toContainText("not configured");
+    // React resets forms after an action; the email must survive a failed attempt.
+    await expect(page.getByLabel("Email")).toHaveValue("someone@example.test");
   });
 
   test("sign-out answers with 303 to the localized login page", async ({ request, baseURL }) => {
@@ -78,7 +80,8 @@ test.describe("protected routes (invariant 2)", () => {
       maxRedirects: 0,
     });
     expect(response.status()).toBe(303);
-    expect(new URL(response.headers()["location"] ?? "", "http://x").pathname).toBe("/ar/login");
+    // Relative, so it never points at the server's internal host.
+    expect(response.headers()["location"]).toBe("/ar/login");
   });
 
   test("sign-out rejects cross-site requests", async ({ request }) => {

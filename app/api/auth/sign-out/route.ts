@@ -20,9 +20,12 @@ export async function POST(request: NextRequest) {
   // will revoke all sessions server-side in Milestone 1.
   await supabase?.auth.signOut({ scope: "local" });
 
-  const response = NextResponse.redirect(new URL(`/${locale}/login`, request.url), 303);
-  response.headers.set("Cache-Control", "private, no-store");
-  return response;
+  // Relative Location: the server's own URL (bind address, reverse proxy) can
+  // differ from the host the browser used.
+  return new NextResponse(null, {
+    status: 303,
+    headers: { Location: `/${locale}/login`, "Cache-Control": "private, no-store" },
+  });
 }
 
 /**
