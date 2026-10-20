@@ -33,4 +33,4 @@ Severity legend: **Conflict** = two statements cannot both be implemented litera
 
 - **Next.js 16.4** is current and differs from earlier versions. `middleware.ts` is now `proxy.ts`, and Cache Components (`cacheComponents`) is on. ADR-0002 records how tenant data is kept out of shared caches.
 - The shadcn/ui registry is unreachable from the build container, so components were written locally against the same Radix primitives (`radix-ui`). `components.json` is included so `npx shadcn add` works on a developer machine.
-- No Docker daemon runs in the build container, so the Supabase CLI stack could not start here. Migrations are verified against a plain PostgreSQL 16 database with a small Supabase-compatibility shim (`supabase/tests/shim/supabase_shim.sql`). CI uses the same approach.
+- No Docker daemon runs in the build container, so the Supabase CLI stack could not start here. Migrations are verified against a plain PostgreSQL 16 database with a small Supabase-compatibility shim (`tests/db/shim/supabase_shim.sql`). CI uses the same approach.
