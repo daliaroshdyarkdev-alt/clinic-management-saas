@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.985 0.003 200);
+  --foreground: oklch(0.21 0.02 230);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.02 230);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.02 230);
+  --primary: oklch(0.52 0.1 190);
+  --primary-foreground: oklch(0.99 0.005 190);
+  --secondary: oklch(0.95 0.015 195);
+  --secondary-foreground: oklch(0.3 0.04 200);
+  --muted: oklch(0.955 0.006 210);
+  --muted-foreground: oklch(0.5 0.02 230);
+  --accent: oklch(0.94 0.02 192);
+  --accent-foreground: oklch(0.3 0.05 195);
+  --destructive: oklch(0.58 0.21 27);
+  --success: oklch(0.55 0.14 155);
+  --warning: oklch(0.8 0.15 80);
+  --warning-foreground: oklch(0.42 0.1 60);
+  --info: oklch(0.55 0.15 250);
+  --border: oklch(0.9 0.01 215);
+  --input: oklch(0.88 0.012 215);
+  --ring: oklch(0.6 0.1 190);
+  --sidebar: oklch(0.99 0.003 200);
+  --sidebar-foreground: oklch(0.3 0.02 230);
+  --sidebar-accent: oklch(0.94 0.025 192);
+  --sidebar-accent-foreground: oklch(0.32 0.07 192);
+  --sidebar-border: oklch(0.91 0.01 215);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.17 0.015 230);
+    --foreground: oklch(0.96 0.005 210);
+    --card: oklch(0.21 0.017 230);
+    --card-foreground: oklch(0.96 0.005 210);
+    --popover: oklch(0.21 0.017 230);
+    --popover-foreground: oklch(0.96 0.005 210);
+    --primary: oklch(0.7 0.11 188);
+    --primary-foreground: oklch(0.18 0.03 200);
+    --secondary: oklch(0.27 0.02 220);
+    --secondary-foreground: oklch(0.94 0.01 200);
+    --muted: oklch(0.26 0.015 225);
+    --muted-foreground: oklch(0.72 0.015 220);
+    --accent: oklch(0.28 0.03 200);
+    --accent-foreground: oklch(0.94 0.02 190);
+    --destructive: oklch(0.68 0.19 25);
+    --success: oklch(0.72 0.14 155);
+    --warning: oklch(0.82 0.14 80);
+    --warning-foreground: oklch(0.88 0.1 80);
+    --info: oklch(0.72 0.13 250);
+    --border: oklch(0.3 0.015 225);
+    --input: oklch(0.34 0.015 225);
+    --ring: oklch(0.6 0.1 190);
+    --sidebar: oklch(0.19 0.016 230);
+    --sidebar-foreground: oklch(0.9 0.01 210);
+    --sidebar-accent: oklch(0.27 0.03 200);
+    --sidebar-accent-foreground: oklch(0.94 0.03 188);
+    --sidebar-border: oklch(0.28 0.015 225);
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  /* Arabic text needs a little more line height to keep diacritics readable. */
+  :lang(ar) body {
+    line-height: 1.7;
+  }
+}
