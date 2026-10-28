@@ -8,8 +8,9 @@ import { publicEnv } from "@/lib/env";
  * are subject to Row Level Security; this is the default data access path.
  */
 export async function createSupabaseServerClient() {
-  const env = publicEnv();
+  // Reading cookies first marks the route as dynamic before anything else runs.
   const cookieStore = await cookies();
+  const env = publicEnv();
 
   return createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
     cookies: {

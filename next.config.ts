@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
   // user-specific, so nothing is cached on the server (docs/adr/0002).
   cacheComponents: false,
   poweredByHeader: false,
+  experimental: {
+    serverActions: {
+      // Licence uploads are capped at 10 MB (also enforced in SQL and Storage).
+      bodySizeLimit: "11mb",
+    },
+  },
   turbopack: {
     rules: {
       "*.css": {

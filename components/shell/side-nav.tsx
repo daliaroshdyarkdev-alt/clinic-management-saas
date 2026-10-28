@@ -1,23 +1,19 @@
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 import { navItemsFor } from "@/lib/navigation/nav";
-import type { ClinicRole } from "@/lib/tenancy/active-clinic";
+import type { ClinicCapability, ClinicRole } from "@/modules/tenancy/active-clinic";
+import { NavLink } from "./nav-link";
 
-export async function SideNav({ role }: { role: ClinicRole }) {
+export async function SideNav({ role, capabilities }: { role: ClinicRole; capabilities: readonly ClinicCapability[] }) {
   const t = await getTranslations("shell");
   const tc = await getTranslations("common");
 
   return (
     <nav aria-label={t("navigation")} className="flex gap-1 overflow-x-auto md:flex-col">
-      {navItemsFor(role).map((item) =>
+      {navItemsFor(role, capabilities).map((item) =>
         item.milestone === null ? (
-          <Link
-            key={item.key}
-            href={item.href}
-            className="whitespace-nowrap rounded-md bg-accent px-3 py-2 text-sm font-medium text-accent-foreground"
-          >
+          <NavLink key={item.key} href={item.href}>
             {t(`nav.${item.key}`)}
-          </Link>
+          </NavLink>
         ) : (
           <span
             key={item.key}

@@ -15,8 +15,17 @@ describe("safeNextPath", () => {
     "/en/admin",
     "/app?x=https://evil.example",
     "javascript:alert(1)",
+    "/invite/short",
+    "/invite/abc/../../x",
   ])("rejects %s", (next) => {
     expect(safeNextPath(next, "ar")).toBe("/app");
+  });
+
+  it("accepts the admin area and invitation links", () => {
+    expect(safeNextPath("/en/admin/clinics", "en")).toBe("/admin/clinics");
+    expect(safeNextPath("/ar/invite/AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-abcde", "ar")).toBe(
+      "/invite/AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-abcde",
+    );
   });
 
   it("falls back when nothing is given", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveActiveClinic, type WorkspaceClinic } from "@/lib/tenancy/active-clinic";
+import { resolveActiveClinic, type WorkspaceClinic } from "@/modules/tenancy/active-clinic";
 
 const a: WorkspaceClinic = {
   clinicId: "00000000-0000-4000-8000-00000000000a",

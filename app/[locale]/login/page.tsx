@@ -3,6 +3,7 @@ import { enterRouteLocale } from "@/i18n/locale";
 import { DevNotice } from "@/components/shell/dev-notice";
 import { LocaleSwitcher } from "@/components/shell/locale-switcher";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
 import { LoginForm } from "./login-form";
 
 export default async function LoginPage({ params, searchParams }: PageProps<"/[locale]/login">) {
@@ -24,8 +25,17 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
             </CardTitle>
             <CardDescription>{t("description")}</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="grid gap-4">
             <LoginForm next={typeof next === "string" ? next : undefined} />
+            <p className="text-sm text-muted-foreground">
+              {t("noAccount")}{" "}
+              <Link
+                href={typeof next === "string" ? { pathname: "/register", query: { next } } : "/register"}
+                className="text-primary underline-offset-4 hover:underline"
+              >
+                {t("createAccount")}
+              </Link>
+            </p>
           </CardContent>
         </Card>
       </main>

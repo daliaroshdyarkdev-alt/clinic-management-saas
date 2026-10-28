@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { switchClinic } from "@/lib/tenancy/actions";
+import { switchClinic } from "@/modules/tenancy/actions";
 
 type Option = { clinicId: string; name: string };
 

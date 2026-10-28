@@ -5,15 +5,16 @@ import { DevNotice } from "@/components/shell/dev-notice";
 import { LocaleSwitcher } from "@/components/shell/locale-switcher";
 import { SideNav } from "@/components/shell/side-nav";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { signOut } from "@/lib/auth/actions";
-import { getWorkspace } from "@/lib/tenancy/workspace";
+import { getWorkspace } from "@/modules/tenancy/workspace";
 
 export default async function AppLayout({ children }: LayoutProps<"/[locale]/app">) {
   const locale = await getLocale();
   const workspace = await getWorkspace();
   // The proxy already redirects anonymous visitors; this is the authoritative check.
   if (!workspace) redirect(`/${locale}/login`);
-  const { active, clinics } = workspace;
+  const { active, clinics, capabilities, isPlatformAdmin } = workspace;
   const t = await getTranslations("shell");
 
   return (
@@ -32,6 +33,11 @@ export default async function AppLayout({ children }: LayoutProps<"/[locale]/app
           ) : null}
         </div>
         <div className="flex items-center gap-2">
+          {isPlatformAdmin ? (
+            <Link href="/admin" className="rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-accent">
+              {t("platformAdmin")}
+            </Link>
+          ) : null}
           <LocaleSwitcher />
           <form action={signOut}>
             <input type="hidden" name="locale" value={locale} />
@@ -44,7 +50,7 @@ export default async function AppLayout({ children }: LayoutProps<"/[locale]/app
       <div className="flex flex-1 flex-col md:flex-row">
         {active ? (
           <aside className="border-b p-2 md:w-60 md:shrink-0 md:border-b-0 md:border-e md:p-4">
-            <SideNav role={active.role} />
+            <SideNav role={active.role} capabilities={capabilities} />
           </aside>
         ) : null}
         {/* Keyed by clinic: switching clinics remounts all client state. */}

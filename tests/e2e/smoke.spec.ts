@@ -61,3 +61,34 @@ test("layout has no horizontal overflow on mobile", async ({ page }) => {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(0);
 });
+
+test("platform admin area requires sign-in", async ({ page }) => {
+  await page.goto("/en/admin");
+  await expect(page).toHaveURL(/\/en\/login\?next=%2Fen%2Fadmin$/);
+});
+
+test("registration page is bilingual and validates the password policy on the server", async ({ page }) => {
+  await page.goto("/ar/register");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await page.goto("/en/register");
+  await page.getByLabel("Full name").fill("Synthetic Person");
+  await page.getByLabel("Email").fill("synthetic.person@example.test");
+  await page.getByLabel("Password").fill("alllowercase1");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page.getByRole("main").getByRole("alert")).toHaveText(
+    "Use at least 10 characters with upper- and lower-case letters and a digit.",
+  );
+});
+
+test("invitation link asks signed-out visitors to sign in, keeping the link", async ({ page }) => {
+  const token = "AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-abcde";
+  await page.goto(`/en/invite/${token}`);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Clinic invitation");
+  await page.getByRole("link", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(new RegExp(`/en/login\\?next=%2Fen%2Finvite%2F${token}$`));
+});
+
+test("licence files are not reachable without a session", async ({ request }) => {
+  const response = await request.get("/api/licenses/00000000-0000-4000-8000-000000000000", { maxRedirects: 0 });
+  expect(response.status()).toBe(401);
+});

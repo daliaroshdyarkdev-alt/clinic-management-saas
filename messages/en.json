@@ -12,7 +12,8 @@
   "landing": {
     "headline": "Appointments, patients, finance and messaging for your clinic",
     "body": "A secure workspace for clinic owners, reception, cashiers and doctors.",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "registerClinic": "Register your clinic"
   },
   "login": {
     "title": "Sign in",
@@ -22,7 +23,9 @@
     "submit": "Sign in",
     "submitting": "Signing in…",
     "errorInvalid": "Enter a valid email and password.",
-    "errorFailed": "Email or password is incorrect."
+    "errorFailed": "Email or password is incorrect.",
+    "noAccount": "New here?",
+    "createAccount": "Create an account"
   },
   "shell": {
     "clinic": "Clinic",
@@ -37,7 +40,8 @@
       "finance": "Finance",
       "whatsapp": "WhatsApp",
       "staff": "Staff",
-      "subscription": "Subscription"
+      "subscription": "Subscription",
+      "onboarding": "Licences & verification"
     },
     "roles": {
       "owner": "Owner",
@@ -45,7 +49,8 @@
       "receptionist": "Receptionist",
       "cashier": "Cashier",
       "doctor": "Doctor"
-    }
+    },
+    "platformAdmin": "Platform admin"
   },
   "overview": {
     "title": "Overview",
@@ -60,6 +65,184 @@
     "pendingNotice": "This clinic is waiting for licence verification. Appointments, consultations and patient messages stay disabled until the platform approves it.",
     "suspendedNotice": "This clinic is suspended. Contact the platform team.",
     "noClinicTitle": "No active clinic",
-    "noClinicBody": "Your account is not an active member of any clinic. Ask the clinic owner for an invitation, or contact them if your access was suspended."
+    "noClinicBody": "Your account is not an active member of any clinic. Ask the clinic owner for an invitation, or contact them if your access was suspended.",
+    "registerClinic": "Register a clinic",
+    "goToOnboarding": "Upload or check your licences",
+    "closedNotice": "This clinic is closed. Its records are archived and kept.",
+    "trialEnds": "Free trial ends"
+  },
+  "register": {
+    "title": "Create your account",
+    "description": "Clinic owners and invited staff each use their own personal account.",
+    "fullName": "Full name",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 10 characters with upper- and lower-case letters and a digit.",
+    "submit": "Create account",
+    "submitting": "Creating…",
+    "confirmEmail": "Check your email and open the confirmation link, then sign in to continue.",
+    "haveAccount": "Already have an account?",
+    "signIn": "Sign in"
+  },
+  "newClinic": {
+    "title": "Register a clinic",
+    "description": "You will be the clinic owner. The clinic stays pending until the platform verifies its licences.",
+    "name": "Clinic name",
+    "disclaimerTitle": "Legal notice",
+    "disclaimerDraft": "Draft text — pending legal review.",
+    "acceptDisclaimer": "I have read and accept this notice on behalf of the clinic.",
+    "submit": "Register clinic",
+    "submitting": "Registering…",
+    "noDisclaimer": "Registration is temporarily unavailable."
+  },
+  "onboarding": {
+    "ownerOnly": "Only the clinic owner can manage licences.",
+    "title": "Licences & verification",
+    "pendingIntro": "Upload the clinic operating licence and the doctor's professional licence. The platform team reviews them before the clinic can start operating.",
+    "stateIntro": {
+      "active": "Your clinic is verified and active.",
+      "suspended": "Your clinic is suspended. Contact the platform team.",
+      "closed": "Your clinic is closed."
+    },
+    "trialEnds": "Free trial ends on {date}.",
+    "types": {
+      "clinic_operating": "Clinic operating licence",
+      "doctor_professional": "Doctor's professional licence"
+    },
+    "status": "Status",
+    "reviewStatus": {
+      "submitted": "Waiting for review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "replacement_requested": "Replacement requested",
+      "superseded": "Replaced"
+    },
+    "uploadedAt": "Version {revision}, uploaded {date}",
+    "reviewerNote": "Reviewer note",
+    "viewFile": "View file",
+    "notUploaded": "Not uploaded yet.",
+    "history": "Earlier versions",
+    "historyLine": "Version {revision} · {status} · {date}",
+    "chooseFile": "Licence file",
+    "fileHint": "PDF, JPG or PNG, up to 10 MB.",
+    "uploaded": "Uploaded. It will be reviewed by the platform team.",
+    "uploading": "Uploading…",
+    "upload": "Upload"
+  },
+  "staff": {
+    "noAccess": "You don't have permission to manage staff in this clinic.",
+    "title": "Staff",
+    "inviteTitle": "Invite a staff member",
+    "inviteDescription": "The invitation link works once, for 7 days, and only for the invited email address.",
+    "inviteEmail": "Email",
+    "role": "Role",
+    "invite": "Create invitation",
+    "inviting": "Creating…",
+    "inviteCreated": "Invitation created. Send this link to the employee — it is shown only once:",
+    "openInvitations": "Open invitations",
+    "expires": "expires {date}",
+    "revoke": "Revoke",
+    "membersTitle": "Team",
+    "unnamed": "(no name)",
+    "status": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "deactivated": "Deactivated"
+    },
+    "changeRole": "Change role",
+    "reactivate": "Reactivate",
+    "restrictAccess": "Suspend or deactivate…",
+    "reason": "Reason (kept in the audit log)",
+    "suspend": "Suspend",
+    "deactivate": "Deactivate permanently",
+    "deactivateHint": "Access ends immediately. Deactivation cannot be undone; history is kept.",
+    "permissionsTitle": "Manager permissions",
+    "permissionsDescription": "Only you, as owner, can assign roles and change permissions.",
+    "managerCanManageStaff": "Managers can invite, suspend and deactivate receptionists, cashiers and doctors.",
+    "managerCannotManageStaff": "Managers cannot manage staff.",
+    "grantToManagers": "Allow managers to manage staff",
+    "revokeFromManagers": "Remove this permission",
+    "saved": "Saved."
+  },
+  "invite": {
+    "title": "Clinic invitation",
+    "description": "Join a clinic workspace with your personal account.",
+    "signInFirst": "Sign in or create an account with the email address the invitation was sent to.",
+    "createAccount": "Create account",
+    "signIn": "Sign in",
+    "summary": "You are invited to join {clinic} as {role}.",
+    "expires": "This invitation expires on {date}.",
+    "accept": "Accept and join",
+    "status": {
+      "invalid": "This invitation link is not valid.",
+      "used": "This invitation has already been used.",
+      "revoked": "This invitation was cancelled by the clinic.",
+      "expired": "This invitation has expired. Ask the clinic for a new one.",
+      "email_mismatch": "This invitation was sent to a different email address. Sign in with that address."
+    }
+  },
+  "admin": {
+    "title": "Platform administration",
+    "clinicsTitle": "Clinics",
+    "filter": "Filter by status",
+    "noClinics": "No clinics in this status.",
+    "registeredAt": "registered {date}",
+    "trial": "Trial: {start} → {end}",
+    "owner": "Owner",
+    "noOwner": "No active owner.",
+    "openFile": "Open file (logged)",
+    "saved": "Saved.",
+    "reasonOptionalForApproval": "Reason (required to reject or request a replacement)",
+    "approve": "Approve",
+    "requestReplacement": "Request replacement",
+    "reject": "Reject",
+    "lifecycle": "Clinic status",
+    "activateHint": "Activation requires both licences approved. The 14-day trial starts now.",
+    "activate": "Activate clinic",
+    "reasonRequired": "Reason (required)",
+    "setState": {
+      "active": "Reactivate",
+      "suspended": "Suspend",
+      "closed": "Close (final)"
+    },
+    "history": "History"
+  },
+  "errors": {
+    "forbidden": "You don't have permission to do this.",
+    "invalid_input": "Please check the form and try again.",
+    "unexpected": "Something went wrong. Please try again.",
+    "signup_failed": "We couldn't create the account. If you already have one, sign in instead.",
+    "weak_password": "Use at least 10 characters with upper- and lower-case letters and a digit.",
+    "already_member": "This person is already a member of the clinic.",
+    "capability_not_grantable": "This permission can't be given to that role.",
+    "cannot_change_self": "You can't change your own access.",
+    "clinic_not_editable": "This clinic can't be changed in its current status.",
+    "clinic_not_found": "Clinic not found.",
+    "clinic_not_pending": "This clinic is not waiting for activation.",
+    "disclaimer_not_current": "The legal notice changed. Reload the page and review it again.",
+    "email_not_confirmed": "Confirm your email address first.",
+    "file_not_found": "The uploaded file was not found. Upload it again.",
+    "invalid_clinic_name": "Enter a clinic name of 2 to 200 characters.",
+    "invalid_decision": "Invalid decision.",
+    "invalid_email": "Enter a valid email address.",
+    "invalid_file": "Upload a PDF, JPG or PNG file up to 10 MB.",
+    "invalid_role": "This role can't be assigned here.",
+    "invalid_storage_path": "The file location is not valid. Upload it again.",
+    "invalid_transition": "This status change isn't allowed.",
+    "invalid_value": "Invalid value.",
+    "invitation_closed": "This invitation is no longer open.",
+    "invitation_email_mismatch": "This invitation was sent to a different email address.",
+    "invitation_expired": "This invitation has expired.",
+    "invitation_invalid": "This invitation link is not valid.",
+    "invitation_pending": "An open invitation already exists for this email.",
+    "invitation_revoked": "This invitation was cancelled.",
+    "invitation_used": "This invitation has already been used.",
+    "license_not_found": "Licence not found.",
+    "license_not_reviewable": "This licence was already reviewed or replaced.",
+    "licenses_not_approved": "Both licences must be approved before activation.",
+    "membership_deactivated": "This person's access to the clinic was permanently deactivated.",
+    "owner_protected": "The clinic owner's access and role can't be changed.",
+    "reason_required": "Please enter a reason.",
+    "too_many_pending_clinics": "You already have three clinics waiting for verification."
   }
 }

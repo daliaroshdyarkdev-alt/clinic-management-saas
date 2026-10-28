@@ -6,7 +6,7 @@ import { z } from "zod";
 import { routing } from "@/i18n/routing";
 import { logger } from "@/lib/telemetry/logger";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { ACTIVE_CLINIC_COOKIE } from "@/lib/tenancy/active-clinic";
+import { ACTIVE_CLINIC_COOKIE } from "@/modules/tenancy/active-clinic";
 import { safeNextPath } from "./safe-next-path";
 
 const signInSchema = z.object({
