@@ -31,13 +31,13 @@ Conventions used below:
 
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
-| ONB-001 | onboarding | `clinics`, `clinic_memberships`, `user_profiles` | `action: registerClinic` → `rpc: register_clinic` | `(public)/register` | `db: onboarding.register-creates-owner`, `e2e: register` | M1 | planned |
-| ONB-002 | onboarding | `clinic_licenses`, storage bucket `licenses` (private) | `action: uploadLicense` (signed upload) | onboarding/licenses | `db: storage.licenses-cross-tenant-denied` | M1 | planned |
-| ONB-003 | platform-admin | `clinic_licenses`, `clinic_review_decisions`, `audit_events` | `rpc: admin_review_clinic` | `(platform-admin)/clinics/pending` | `db: admin.review-logged`, `sec: admin.non-admin-denied` | M1 | planned |
-| ONB-004 | onboarding, billing | `clinics.activated_at`, `clinic_subscriptions` (trial) | `rpc: admin_activate_clinic` | admin + clinic status banner | `db: onboarding.trial-starts-once`, `db: onboarding.pending-clinic-cannot-operate` | M1 | planned |
-| ONB-005 | onboarding | `clinics.account_state`, `clinic_state_events` | `rpc: admin_set_clinic_state` | admin clinic detail | `db: onboarding.state-transitions` | M1 | planned |
+| ONB-001 | onboarding | `clinics`, `clinic_memberships`, `user_profiles` | `action: registerClinic` → `rpc: register_clinic` | `(public)/register` | `db: onboarding.register-creates-owner`, `e2e: register` | M1 | done |
+| ONB-002 | onboarding | `clinic_licenses`, storage bucket `licenses` (private) | `action: uploadLicense` (signed upload) | onboarding/licenses | `db: storage.licenses-cross-tenant-denied` | M1 | done (malware scanning blocked, OD-L06) |
+| ONB-003 | platform-admin | `clinic_licenses`, `clinic_review_decisions`, `audit_events` | `rpc: admin_review_clinic` | `(platform-admin)/clinics/pending` | `db: admin.review-logged`, `sec: admin.non-admin-denied` | M1 | done |
+| ONB-004 | onboarding, billing | `clinics.activated_at`, `clinic_subscriptions` (trial) | `rpc: admin_activate_clinic` | admin + clinic status banner | `db: onboarding.trial-starts-once`, `db: onboarding.pending-clinic-cannot-operate` | M1 | done (gate helper `private.clinic_is_operational`; enforced by M2+ functions) |
+| ONB-005 | onboarding | `clinics.account_state`, `clinic_state_events` | `rpc: admin_set_clinic_state` | admin clinic detail | `db: onboarding.state-transitions` | M1 | done (closure final pending OD-B01) |
 | ONB-006 | onboarding | `clinic_licenses` revisions | `action: replaceLicense` | onboarding/licenses | `db: onboarding.reverification` | M6 | planned |
-| ONB-007 | onboarding | `legal_disclaimer_versions`, `disclaimer_acceptances` | `action: acceptDisclaimer` | register + shell banner | `e2e: disclaimer-shown` | M1 | blocked (OD-L01 text) — placeholder only |
+| ONB-007 | onboarding | `legal_disclaimer_versions`, `disclaimer_acceptances` | `action: acceptDisclaimer` | register + shell banner | `e2e: disclaimer-shown` | M1 | done with DRAFT text — production blocked (OD-L01) |
 | ONB-008 | billing, appointments | `clinic_doctors`, subscription capacity | `rpc: activate_clinic_doctor` | doctors page | `race: capacity.doctor-activation` | M2/M6 | planned |
 
 ## 3.2 Patient registry and identity (PAT)
@@ -136,13 +136,13 @@ Conventions used below:
 
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
-| STA-001 | tenancy, permissions | `clinic_memberships.role`, `clinic_role_permissions` | `rpc: set_role_permission` (owner only) | permissions page | `sec: permissions.owner-only`, `db: permissions.non-overrideable-medical` | M0 (roles) / M1 (grants) | foundation |
-| STA-002 | tenancy | `clinic_invitations` (token hash) | `action: inviteStaff`, `route: invite accept` | staff, `(auth)/invite/[token]` | `db: invite.single-use`, `db: invite.expired` | M1 | planned |
-| STA-003 | tenancy | `clinic_memberships.status` | `rpc: set_membership_status` | staff | `sec: suspended-session-denied` | M0 (status enforced in RLS) / M1 (UI) | foundation |
-| STA-004 | tenancy | memberships per clinic | `action: switchClinic` | clinic switcher | `db: multi-clinic.isolated`, `e2e: switcher` | M0 | foundation |
-| STA-005 | tenancy | `clinic_role_permissions` (`staff.manage`) | `rpc: set_membership_status` | staff | `sec: manager-cannot-change-roles`, `sec: owner-not-lockable` | M1 | planned |
+| STA-001 | tenancy, permissions | `clinic_memberships.role`, `clinic_role_permissions` | `rpc: set_role_permission` (owner only) | permissions page | `sec: permissions.owner-only`, `db: permissions.non-overrideable-medical` | M0 (roles) / M1 (grants) | done (capability `staff.manage`; more capabilities added per milestone) |
+| STA-002 | tenancy | `clinic_invitations` (token hash) | `action: inviteStaff`, `route: invite accept` | staff, `(auth)/invite/[token]` | `db: invite.single-use`, `db: invite.expired` | M1 | done (link shared by inviter; email delivery not built) |
+| STA-003 | tenancy | `clinic_memberships.status` | `rpc: set_membership_status` | staff | `sec: suspended-session-denied` | M0 (status enforced in RLS) / M1 (UI) | done |
+| STA-004 | tenancy | memberships per clinic | `action: switchClinic` | clinic switcher | `db: multi-clinic.isolated`, `e2e: switcher` | M0 | done |
+| STA-005 | tenancy | `clinic_role_permissions` (`staff.manage`) | `rpc: set_membership_status` | staff | `sec: manager-cannot-change-roles`, `sec: owner-not-lockable` | M1 | done |
 | STA-006 | appointments, permissions | — | — | — | see APT-015 | M2 | planned |
-| STA-007 | audit | `audit_events` (append-only) | `private.write_audit_event` | audit log (M1) | `db: audit.append-only`, `db: audit.no-client-insert` | M0 | foundation |
+| STA-007 | audit | `audit_events` (append-only) | `private.write_audit_event` | audit log (M1) | `db: audit.append-only`, `db: audit.no-client-insert` | M0 | done for M0/M1 actions; extended per domain |
 | STA-008 | — | — | — | — | — | — | excluded (attendance/shifts) |
 
 ## 3.8 SaaS plans, billing and trials (SUB)
@@ -151,7 +151,7 @@ Conventions used below:
 |---|---|---|---|---|---|---|---|
 | SUB-001 | billing | `platform_plans`, `plan_versions` | `rpc: admin_publish_plan_version` | admin plans | `db: plan.versioned` | M6 | planned (prices blocked OD-B05) |
 | SUB-002 | billing | `clinic_doctors.status` | `rpc: activate_clinic_doctor` | doctors | `race: capacity` | M6 | planned |
-| SUB-003 | billing | `clinic_subscriptions` trial fields, `trial_extensions` | `rpc: admin_extend_trial` | admin | `db: trial.once`, `db: extension.admin-only` | M1 (start) / M6 | planned |
+| SUB-003 | billing | `clinic_subscriptions` trial fields, `trial_extensions` | `rpc: admin_extend_trial` | admin | `db: trial.once`, `db: extension.admin-only` | M1 (start) / M6 | partial: trial starts once at activation (M1); extension M6 |
 | SUB-004 | billing | grace config | entitlement check `private.clinic_entitlement()` | banner | `db: grace.no-erasure` | M6 | blocked (grace operations, OD-B05) |
 | SUB-005 | billing | plan_versions periods | — | pricing | `unit: period-dates` | M6 | planned |
 | SUB-006 | billing | `subscription_payments` | `PaymentProvider` adapter, `rpc: admin_verify_manual_payment` | billing, admin | `sec: manual-evidence-no-entitlement`, `race: payment-webhook.replay` | M6 | blocked for real gateway (OD-P02); mock proceeds |
@@ -165,9 +165,9 @@ Conventions used below:
 
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
-| ADM-001 | platform-admin | `platform_admins`, `clinic_licenses`, `clinic_state_events` | admin RPCs | `(platform-admin)/*` | `sec: admin.non-admin-denied` | M1 / M6 | planned |
+| ADM-001 | platform-admin | `platform_admins`, `clinic_licenses`, `clinic_state_events` | admin RPCs | `(platform-admin)/*` | `sec: admin.non-admin-denied` | M1 / M6 | partial: review, activation, suspend/reactivate/close (M1); re-verification M6 |
 | ADM-002 | platform-admin, billing | trial extensions, payments, plan versions | admin RPCs | admin | `db: admin.actions-audited` | M6 | planned |
-| ADM-003 | platform-admin | no admin RLS path into clinic data | — | — | `sec: admin.no-clinic-data` (M0 for tenancy tables, extended each milestone) | M0+ | foundation |
+| ADM-003 | platform-admin | no admin RLS path into clinic data | — | — | `sec: admin.no-clinic-data` (M0 for tenancy tables, extended each milestone) | M0+ | foundation (admin read paths limited to clinic metadata, licences, owner profile; tested) |
 | ADM-004 | — | — | — | — | default deny, test asserts no impersonation path | — | blocked (Q97 / OD-S01) |
 | ADM-005 | — | — | — | — | — | — | blocked (OD-B07) |
 
@@ -178,14 +178,14 @@ Conventions used below:
 | 1 | Clinic A receptionist cannot read clinic B data | `db: tenancy.cross-tenant-denied` (M0, tenancy tables) → extended per domain | M0+ |
 | 2 | Multi-clinic doctor cannot cross-read without consent | `sec: medical.cross-clinic-*` | M3 |
 | 3 | Concurrent last-slot acceptances | `race: offers.last-slot-accept` | M2 |
-| 4 | Suspended employee's old session denied | `db: tenancy.suspended-member-denied` (M0) + session revocation (M1) | M0/M1 |
+| 4 | Suspended employee's old session denied | `db: tenancy.suspended-member-denied`, `db: staff.suspension-cuts-off-next-query` — done at DB level; browser e2e pending | M0/M1 |
 | 5 | Completed consultation immutable | `sec: medical.completed-immutable` | M3 |
 | 6 | Refund/reversal reconciles | `db: reversal.reconciles` | M4 |
 | 7 | Handover acknowledgement | `race: handover.concurrent` | M4 |
 | 8 | Webhook replay/out-of-order | `race: webhook.replay` | M5 |
 | 9 | Spend cap under concurrent workers | `race: budget.cap-under-concurrency` | M5 |
 | 10 | Opt-out before dispatch stops send | `race: withdrawal-before-dispatch` | M5 |
-| 11 | Trial after activation; plan changes not early | `db: onboarding.trial-starts-once`, `db: plan-change.not-early` | M1/M6 |
+| 11 | Trial after activation; plan changes not early | `db: onboarding.full-happy-path` (trial at activation, not restarted) — done; plan changes M6 | M1/M6 |
 | 12 | Payment webhook replay / manual approval | `race: payment-webhook.replay`, `sec: manual-evidence-no-entitlement` | M6 |
 | 13 | Exited clinic archive retained | `db: archive.retained` | M6 |
 | 14 | Admin tools cannot expose medical/finance | `sec: admin.no-clinic-data` | M0+ |
