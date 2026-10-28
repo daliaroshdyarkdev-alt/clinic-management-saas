@@ -9,13 +9,13 @@ Requirement IDs refer to `docs/SRS.md`; blockers refer to `docs/OPEN_DECISIONS.m
 |---|---|---|
 | Node.js | 22.x | `engines` pinned to `>=22` |
 | pnpm | 10.x | package manager |
-| Next.js | 16.x (App Router) | `proxy.ts` replaces `middleware.ts` in Next 16 |
+| Next.js | 16.4 (App Router) | `proxy.ts` replaces `middleware.ts`; Cache Components disabled (ADR 0002) |
 | React | 19.x | |
 | Tailwind CSS | 4.x | logical properties (`ms-`, `pe-`) for RTL |
 | next-intl | 4.x | `/ar` default, `/en` |
 | @supabase/ssr / supabase-js | 0.x / 2.x | cookie-based server sessions |
-| Zod | 4.x | |
-| Vitest | 4.x | unit + DB tests |
+| Zod | 4.6 | |
+| Vitest | 5.0 | unit + DB tests |
 | Playwright | preinstalled Chromium | e2e smoke |
 | PostgreSQL | 16 (local tests), Supabase uses 15/17 | migrations written for PG ≥ 15 |
 
@@ -35,7 +35,7 @@ Exact resolved versions are in `pnpm-lock.yaml`.
 
 ## 3. Data model (M0 + M1)
 
-All tables in `public` (exposed through PostgREST) have RLS **enabled and forced**, Supabase default grants **revoked**, and explicit minimal grants. Helper functions live in schema `private`, which is not exposed.
+All tables in `public` (exposed through PostgREST) have RLS **enabled**, Supabase default grants **revoked**, and explicit minimal grants. Helper functions live in schema `private`, which is not exposed.
 
 ### M0
 | Table | Key columns | Notes |
