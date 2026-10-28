@@ -2,6 +2,7 @@ export const ACTIVE_CLINIC_COOKIE = "active_clinic_id";
 
 export type ClinicRole = "owner" | "manager" | "receptionist" | "cashier" | "doctor";
 export type ClinicAccountState = "pending" | "active" | "suspended" | "closed";
+export type ClinicCapability = "staff.manage";
 
 export type WorkspaceClinic = {
   clinicId: string;

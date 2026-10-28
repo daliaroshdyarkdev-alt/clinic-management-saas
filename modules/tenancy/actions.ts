@@ -1,10 +1,9 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { ACTIVE_CLINIC_COOKIE } from "./active-clinic";
+import { setActiveClinicCookie } from "./cookie";
 
 export type SwitchClinicResult = { ok: boolean };
 
@@ -30,12 +29,6 @@ export async function switchClinic(clinicId: string): Promise<SwitchClinicResult
     .maybeSingle();
   if (error || !data) return { ok: false };
 
-  (await cookies()).set(ACTIVE_CLINIC_COOKIE, parsed.data, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-  });
+  await setActiveClinicCookie(parsed.data);
   return { ok: true };
 }
