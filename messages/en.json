@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "title": "Clinic Management",
+    "description": "Clinic operations for Egyptian clinics"
+  },
+  "common": {
+    "productName": "Clinic Management",
+    "devNotice": "Development build — synthetic data only. Not approved for real patient information.",
+    "switchLanguage": "العربية",
+    "comingInMilestone": "Milestone {milestone}"
+  },
+  "landing": {
+    "headline": "Appointments, patients, finance and messaging for your clinic",
+    "body": "A secure workspace for clinic owners, reception, cashiers and doctors.",
+    "signIn": "Sign in"
+  },
+  "login": {
+    "title": "Sign in",
+    "description": "Use the email and password for your staff account.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "errorInvalid": "Enter a valid email and password.",
+    "errorFailed": "Email or password is incorrect."
+  },
+  "shell": {
+    "clinic": "Clinic",
+    "switchClinic": "Switch clinic",
+    "signOut": "Sign out",
+    "navigation": "Main navigation",
+    "nav": {
+      "overview": "Overview",
+      "appointments": "Appointments",
+      "myQueue": "My queue",
+      "patients": "Patients",
+      "finance": "Finance",
+      "whatsapp": "WhatsApp",
+      "staff": "Staff",
+      "subscription": "Subscription"
+    },
+    "roles": {
+      "owner": "Owner",
+      "manager": "Manager",
+      "receptionist": "Receptionist",
+      "cashier": "Cashier",
+      "doctor": "Doctor"
+    }
+  },
+  "overview": {
+    "title": "Overview",
+    "yourRole": "Your role",
+    "accountState": "Clinic status",
+    "states": {
+      "pending": "Pending verification",
+      "active": "Active",
+      "suspended": "Suspended",
+      "closed": "Closed"
+    },
+    "pendingNotice": "This clinic is waiting for licence verification. Appointments, consultations and patient messages stay disabled until the platform approves it.",
+    "suspendedNotice": "This clinic is suspended. Contact the platform team.",
+    "noClinicTitle": "No active clinic",
+    "noClinicBody": "Your account is not an active member of any clinic. Ask the clinic owner for an invitation, or contact them if your access was suspended."
+  }
+}

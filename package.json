@@ -4,18 +4,35 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:all": "supabase start && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run --project unit",
+    "test:db": "vitest run --project db",
+    "test:e2e": "playwright test",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:types": "supabase gen types typescript --local > lib/supabase/database.types.ts",
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm test:db && pnpm build"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.118.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.63.0",
     "next": "16.4.3",
     "next-intl": "4.14.9",
+    "radix-ui": "^1.8.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "^0.0.1",
+    "tailwind-merge": "^3.7.0",
     "zod": "4.6.7"
   },
   "devDependencies": {
@@ -34,5 +51,8 @@
     "typescript": "^5",
     "vitest": "5.0.5"
   },
-  "packageManager": "pnpm@10.28.0"
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  }
 }
