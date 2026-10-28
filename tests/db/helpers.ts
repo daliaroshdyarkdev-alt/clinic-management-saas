@@ -40,16 +40,61 @@ export async function as<T>(role: ApiRole, userId: string | null, fn: (db: PoolC
 
 export const asUser = <T>(userId: string, fn: (db: PoolClient) => Promise<T>) => as("authenticated", userId, fn);
 
+/** Runs `fn` as the user and commits (for multi-step workflows that must persist). */
+export async function asUserCommitted<T>(userId: string, fn: (db: PoolClient) => Promise<T>): Promise<T> {
+  const client = await adminPool().connect();
+  try {
+    await client.query("begin");
+    await client.query("select set_config('request.jwt.claims', $1, true)", [
+      JSON.stringify({ sub: userId, role: "authenticated" }),
+    ]);
+    await client.query("set local role authenticated");
+    const result = await fn(client);
+    await client.query("commit");
+    return result;
+  } catch (error) {
+    await client.query("rollback");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 export const asAnon = <T>(fn: (db: PoolClient) => Promise<T>) => as("anon", null, fn);
 
-export async function createUser(label: string): Promise<string> {
+export async function createUser(label: string, options: { confirmed?: boolean } = {}): Promise<string> {
   const id = randomUUID();
-  await adminPool().query("insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, $3)", [
-    id,
-    `${label}.${id.slice(0, 8)}@example.test`,
-    { full_name: `Synthetic ${label}` },
-  ]);
+  await adminPool().query(
+    "insert into auth.users (id, email, raw_user_meta_data, email_confirmed_at) values ($1, $2, $3, $4)",
+    [id, emailOf(label, id), { full_name: `Synthetic ${label}` }, options.confirmed === false ? null : new Date()],
+  );
   return id;
+}
+
+/** Deterministic synthetic email for a user created by createUser. */
+export function emailOf(label: string, id: string): string {
+  return `${label}.${id.slice(0, 8)}@example.test`;
+}
+
+export async function emailFor(userId: string): Promise<string> {
+  const { rows } = await adminPool().query<{ email: string }>("select email from auth.users where id = $1", [userId]);
+  return rows[0].email;
+}
+
+export async function makePlatformAdmin(userId: string): Promise<void> {
+  await adminPool().query("insert into public.platform_admins (user_id) values ($1)", [userId]);
+}
+
+/** Simulates a file already uploaded to Supabase Storage. */
+export async function putStorageObject(bucket: string, name: string): Promise<void> {
+  await adminPool().query("insert into storage.objects (bucket_id, name) values ($1, $2)", [bucket, name]);
+}
+
+export async function currentDisclaimerId(): Promise<string> {
+  const { rows } = await adminPool().query<{ id: string }>(
+    "select id from public.legal_disclaimer_versions where is_current",
+  );
+  return rows[0].id;
 }
 
 export async function createClinic(

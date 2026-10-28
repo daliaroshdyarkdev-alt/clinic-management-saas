@@ -11,6 +11,7 @@
 --   suspended.a@example.test  suspended receptionist at Clinic A
 --   owner.b@example.test      owner of Clinic B
 --   owner.c@example.test      owner of Clinic C (pending verification)
+--   admin@example.test        platform administrator (no clinic membership)
 --
 -- Patients are seeded from Milestone 3, when the patient tables exist.
 
@@ -23,7 +24,8 @@ declare
     {"id": "11111111-1111-4111-8111-000000000004", "email": "doctor.shared@example.test", "name": "Synthetic Shared Doctor",   "locale": "en"},
     {"id": "11111111-1111-4111-8111-000000000005", "email": "suspended.a@example.test",   "name": "موظف موقوف (تجريبي)",       "locale": "ar"},
     {"id": "11111111-1111-4111-8111-000000000006", "email": "owner.b@example.test",       "name": "Synthetic Owner B",         "locale": "en"},
-    {"id": "11111111-1111-4111-8111-000000000007", "email": "owner.c@example.test",       "name": "مالك العيادة ج (تجريبي)",   "locale": "ar"}
+    {"id": "11111111-1111-4111-8111-000000000007", "email": "owner.c@example.test",       "name": "مالك العيادة ج (تجريبي)",   "locale": "ar"},
+    {"id": "11111111-1111-4111-8111-000000000008", "email": "admin@example.test",         "name": "Synthetic Platform Admin",  "locale": "en"}
   ]';
   v_user jsonb;
 begin
@@ -70,3 +72,10 @@ insert into public.clinic_memberships (clinic_id, user_id, role, status) values
   ('22222222-2222-4222-8222-00000000000b', '11111111-1111-4111-8111-000000000006', 'owner', 'active'),
   ('22222222-2222-4222-8222-00000000000b', '11111111-1111-4111-8111-000000000004', 'doctor', 'active'),
   ('22222222-2222-4222-8222-00000000000c', '11111111-1111-4111-8111-000000000007', 'owner', 'active');
+
+insert into public.platform_admins (user_id) values ('11111111-1111-4111-8111-000000000008');
+
+-- Activated clinics have a trial that started at activation (ONB-004, SUB-003).
+insert into public.clinic_subscriptions (clinic_id, trial_started_at, trial_ends_at)
+select id, activated_at, activated_at + interval '14 days' from public.clinics
+where id in ('22222222-2222-4222-8222-00000000000a', '22222222-2222-4222-8222-00000000000b');

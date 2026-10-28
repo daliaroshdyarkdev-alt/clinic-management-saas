@@ -33,7 +33,12 @@ describe("supabase/seed.sql", () => {
       const profiles = await client.query(
         "select count(*)::int as n from public.user_profiles p join auth.users u on u.id = p.user_id where u.email like '%@example.test' and u.id::text like '11111111-%'",
       );
-      expect(profiles.rows[0].n).toBe(7);
+      expect(profiles.rows[0].n).toBe(8);
+
+      const admins = await client.query(
+        "select u.email from public.platform_admins a join auth.users u on u.id = a.user_id where u.email = 'admin@example.test'",
+      );
+      expect(admins.rowCount).toBe(1);
 
       const passwordOk = await client.query(
         "select encrypted_password = extensions.crypt('Synthetic-Pass-2026', encrypted_password) as ok from auth.users where email = 'owner.a@example.test'",
