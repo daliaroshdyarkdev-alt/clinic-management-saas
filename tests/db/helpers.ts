@@ -24,11 +24,7 @@ export async function closePool(): Promise<void> {
  * the way PostgREST sets them. The transaction is always rolled back, so each
  * call starts from the fixture state.
  */
-export async function as<T>(
-  role: ApiRole,
-  userId: string | null,
-  fn: (db: PoolClient) => Promise<T>,
-): Promise<T> {
+export async function as<T>(role: ApiRole, userId: string | null, fn: (db: PoolClient) => Promise<T>): Promise<T> {
   const client = await adminPool().connect();
   try {
     await client.query("begin");
@@ -42,17 +38,17 @@ export async function as<T>(
   }
 }
 
-export const asUser = <T>(userId: string, fn: (db: PoolClient) => Promise<T>) =>
-  as("authenticated", userId, fn);
+export const asUser = <T>(userId: string, fn: (db: PoolClient) => Promise<T>) => as("authenticated", userId, fn);
 
 export const asAnon = <T>(fn: (db: PoolClient) => Promise<T>) => as("anon", null, fn);
 
 export async function createUser(label: string): Promise<string> {
   const id = randomUUID();
-  await adminPool().query(
-    "insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, $3)",
-    [id, `${label}.${id.slice(0, 8)}@example.test`, { full_name: `Synthetic ${label}` }],
-  );
+  await adminPool().query("insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, $3)", [
+    id,
+    `${label}.${id.slice(0, 8)}@example.test`,
+    { full_name: `Synthetic ${label}` },
+  ]);
   return id;
 }
 

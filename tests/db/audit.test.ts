@@ -21,9 +21,10 @@ afterAll(closePool);
 
 describe("audit_events", () => {
   it("write helper records the event", async () => {
-    const { rows } = await adminPool().query("select category, action, clinic_id from public.audit_events where id = $1", [
-      eventId,
-    ]);
+    const { rows } = await adminPool().query(
+      "select category, action, clinic_id from public.audit_events where id = $1",
+      [eventId],
+    );
     expect(rows).toEqual([{ category: "tenancy", action: "test.event", clinic_id: clinic }]);
   });
 
@@ -53,19 +54,22 @@ describe("audit_events", () => {
       ),
     );
     await asUser(owner, (db) =>
-      expectPgError(
-        db.query("select private.write_audit_event('tenancy', 'forged', 'success')"),
-        /permission denied/,
-      ),
+      expectPgError(db.query("select private.write_audit_event('tenancy', 'forged', 'success')"), /permission denied/),
     );
   });
 
   it("service_role cannot update or delete audit events", async () => {
     await as("service_role", null, (db) =>
-      expectPgError(db.query("update public.audit_events set action = 'x' where id = $1", [eventId]), /permission denied|append-only/),
+      expectPgError(
+        db.query("update public.audit_events set action = 'x' where id = $1", [eventId]),
+        /permission denied|append-only/,
+      ),
     );
     await as("service_role", null, (db) =>
-      expectPgError(db.query("delete from public.audit_events where id = $1", [eventId]), /permission denied|append-only/),
+      expectPgError(
+        db.query("delete from public.audit_events where id = $1", [eventId]),
+        /permission denied|append-only/,
+      ),
     );
   });
 });

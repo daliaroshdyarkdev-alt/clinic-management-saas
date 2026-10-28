@@ -11,8 +11,7 @@ import type { TestProject } from "vitest/node";
  * server, e.g. postgres://postgres:postgres@127.0.0.1:5432/postgres.
  */
 export default async function setup(project: TestProject) {
-  const adminUrl =
-    process.env.TEST_DB_ADMIN_URL ?? "postgres://postgres:postgres@127.0.0.1:5432/postgres";
+  const adminUrl = process.env.TEST_DB_ADMIN_URL ?? "postgres://postgres:postgres@127.0.0.1:5432/postgres";
   const dbName = `clinic_saas_test_${process.pid}`;
 
   const admin = new Client({ connectionString: adminUrl });
