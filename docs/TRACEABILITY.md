@@ -18,13 +18,13 @@ Conventions used below:
 
 | ID | Invariant | Mechanism | Tests | Milestone | Status |
 |---|---|---|---|---|---|
-| INV-1 | Immutable `clinic_id`, tenant-scoped permissions | `private.forbid_clinic_id_change()` trigger on every clinic-owned table; RLS on `clinic_id` | `db: tenancy.clinic-id-immutable`, `db: meta.rls-enabled-on-all-public-tables` | M0 | foundation |
-| INV-2 | Membership derived from authenticated server state | RLS uses `auth.uid()` + `clinic_memberships` (status `active`); active-clinic cookie is a view hint, re-verified on each request | `db: tenancy.cross-tenant-denied`, `unit: active-clinic.resolve` | M0 | foundation |
-| INV-3 | Clinic switch invalidates cached clinic data | Switch = server action → cookie → `router.refresh()`; clinic shell keyed by `clinicId` so client state remounts; query keys prefixed by `clinicId` | `e2e: clinic-switch.isolation` (M1) | M0/M1 | foundation |
+| INV-1 | Immutable `clinic_id`, tenant-scoped permissions | `private.forbid_clinic_id_change()` trigger on every clinic-owned table; RLS on `clinic_id` | `db: tenancy.clinic-id-immutable`, `db: meta.rls-enabled-on-all-public-tables` | M0 | done (trigger + RLS on every clinic table; meta test) |
+| INV-2 | Membership derived from authenticated server state | RLS uses `auth.uid()` + `clinic_memberships` (status `active`); active-clinic cookie is a view hint, re-verified on each request | `db: tenancy.cross-tenant-denied`, `unit: active-clinic.resolve` | M0 | done (server-side membership checks; forged-cookie journey in CI) |
+| INV-3 | Clinic switch invalidates cached clinic data | Switch = server action → cookie → `router.refresh()`; clinic shell keyed by `clinicId` so client state remounts; query keys prefixed by `clinicId` | `e2e: clinic-switch.isolation` (M1) | M0/M1 | done (keyed shell + refresh; clinic-switch journey in CI) |
 | INV-4 | Medical content only for assigned open visit | Separate `clinical` schema, visit-scoped policy functions | `sec: medical.non-treating-denied` | M3 | done (clinical schema unexposed; treating-doctor gateway functions) |
 | INV-5 | Cross-clinic access per clinic + visit, view-only, expiring | `cross_clinic_access_grants` checked on every read | `sec: medical.cross-clinic-*` | M3 | done (per visit + doctor grants; revoked on completion/withdrawal/reassignment) |
 | INV-6 | Finance append-only | No UPDATE/DELETE grants + triggers on posted tables | `db: finance.posted-immutable` | M4 | done (append-only triggers for every role; balanced journal at commit) |
-| INV-7 | No clinical/financial data in telemetry | Redacting logger (`lib/telemetry`), Sentry `beforeSend` scrubber | `unit: telemetry.redaction` | M0 (logger) / M7 | foundation |
+| INV-7 | No clinical/financial data in telemetry | Redacting logger (`lib/telemetry`), Sentry `beforeSend` scrubber | `unit: telemetry.redaction` | M0 (logger) / M7 | done (allow-list logger; error monitoring vendor OPEN, go-live checklist) |
 | INV-8 | Idempotent background tasks | Outbox + idempotency keys, unique constraints | `race: worker.duplicate-delivery` | M2/M5 | done (outbox idempotency keys, webhook event ids, one period/receipt per payment) |
 
 ## 3.1 Registration and clinic lifecycle (ONB)
@@ -38,7 +38,7 @@ Conventions used below:
 | ONB-005 | onboarding | `clinics.account_state`, `clinic_state_events` | `rpc: admin_set_clinic_state` | admin clinic detail | `db: onboarding.state-transitions` | M1 | done (closure final pending OD-B01) |
 | ONB-006 | onboarding | `clinic_licenses` revisions | `action: replaceLicense` | onboarding/licenses | `db: onboarding.reverification` | M6 | done |
 | ONB-007 | onboarding | `legal_disclaimer_versions`, `disclaimer_acceptances` | `action: acceptDisclaimer` | register + shell banner | `e2e: disclaimer-shown` | M1 | done with DRAFT text — production blocked (OD-L01) |
-| ONB-008 | billing, appointments | `clinic_doctors`, subscription capacity | `rpc: activate_clinic_doctor` | doctors page | `race: capacity.doctor-activation` | M2/M6 | partial: multiple doctors per clinic (M2); paid capacity limit M6 |
+| ONB-008 | billing, appointments | `clinic_doctors`, subscription capacity | `rpc: activate_clinic_doctor` | doctors page | `race: capacity.doctor-activation` | M2/M6 | done (capacity enforced, M6) |
 
 ## 3.2 Patient registry and identity (PAT)
 
@@ -167,7 +167,7 @@ Conventions used below:
 |---|---|---|---|---|---|---|---|
 | ADM-001 | platform-admin | `platform_admins`, `clinic_licenses`, `clinic_state_events` | admin RPCs | `(platform-admin)/*` | `sec: admin.non-admin-denied` | M1 / M6 | done (incl. re-verification requests) |
 | ADM-002 | platform-admin, billing | trial extensions, payments, plan versions | admin RPCs | admin | `db: admin.actions-audited` | M6 | done |
-| ADM-003 | platform-admin | no admin RLS path into clinic data | — | — | `sec: admin.no-clinic-data` (M0 for tenancy tables, extended each milestone) | M0+ | foundation (admin read paths limited to clinic metadata, licences, owner profile; tested) |
+| ADM-003 | platform-admin | no admin RLS path into clinic data | — | — | `sec: admin.no-clinic-data` (M0 for tenancy tables, extended each milestone) | M0+ | done (no admin path into clinic finance/clinical data; tested per milestone) |
 | ADM-004 | — | — | — | — | default deny, test asserts no impersonation path | — | blocked (Q97 / OD-S01) |
 | ADM-005 | — | — | — | — | — | — | blocked (OD-B07) |
 

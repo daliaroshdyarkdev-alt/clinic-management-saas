@@ -2,7 +2,7 @@
 
 Multi-tenant clinic management web app (Arabic-first, English-capable): appointments and queues, patient records with visit-level medical privacy, operational finance, WhatsApp appointment messaging, staff roles, SaaS billing and platform administration.
 
-> **Status: Milestone 6 (subscriptions and platform billing, mock gateway) — awaiting authenticated end-to-end verification.** Development build with synthetic data only. Not approved for real patient data: see the legal and hosting blockers in [`docs/OPEN_DECISIONS.md`](docs/OPEN_DECISIONS.md).
+> **Status: Phase 1 engineering milestones M0–M7 built — NOT production-ready.** Legal, provider and commercial sign-offs are pending, and the authenticated CI journeys still need their first green run. See [`docs/runbooks/go-live-checklist.md`](docs/runbooks/go-live-checklist.md) and [`docs/OPEN_DECISIONS.md`](docs/OPEN_DECISIONS.md). Synthetic data only.
 
 ## Documents
 
@@ -44,6 +44,7 @@ Seeded users (local only, password `Synthetic-Pass-2026`) are listed at the top 
 | `pnpm test` | Unit tests |
 | `pnpm test:db` | RLS / grant / invariant tests against a throw-away PostgreSQL database (`TEST_DB_ADMIN_URL`) |
 | `pnpm test:e2e` | Builds the app and runs Playwright smoke tests (desktop + mobile Chromium) |
+| `pnpm exec playwright test -c playwright.auth.config.ts` | Signed-in journeys; needs `supabase start`, `supabase db reset` and the local keys exported (see the `e2e-authenticated` CI job) |
 | `pnpm check` | typecheck, lint, unit, DB tests and build |
 
 CI (`.github/workflows/ci.yml`) runs all of the above plus a gitleaks secret scan.
