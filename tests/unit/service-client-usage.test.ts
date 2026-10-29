@@ -9,6 +9,7 @@ const ROOT = process.cwd();
 const CALLERS: Record<string, RegExp> = {
   "modules/public-booking/service.ts": /^public_\w+$/,
   "modules/messaging/webhook-service.ts": /^process_whatsapp_webhook$/,
+  "modules/billing/webhook-service.ts": /^process_payment_webhook$/,
 };
 const ALLOWED = new Set(["lib/supabase/service.ts", ...Object.keys(CALLERS)]);
 

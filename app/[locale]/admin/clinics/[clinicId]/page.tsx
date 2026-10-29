@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { enterRouteLocale } from "@/i18n/locale";
 import { getClinicLicenses, getClinicTrial } from "@/modules/onboarding/queries";
+import { extendTrial, requestReverification } from "@/modules/billing/actions";
+import { getBillingStatus, getReverificationRequests, getTrialExtensions } from "@/modules/billing/queries";
 import { activateClinic, reviewLicense, setClinicState } from "@/modules/platform-admin/actions";
 import { requirePlatformAdmin } from "@/modules/platform-admin/guard";
 import { getAdminClinic } from "@/modules/platform-admin/queries";
@@ -27,7 +29,14 @@ export default async function AdminClinicPage({ params }: PageProps<"/[locale]/a
 
   const detail = await getAdminClinic(clinicId);
   if (!detail) notFound();
-  const [licenses, trial] = await Promise.all([getClinicLicenses(clinicId), getClinicTrial(clinicId)]);
+  const [licenses, trial, billing, extensions, reverifications] = await Promise.all([
+    getClinicLicenses(clinicId),
+    getClinicTrial(clinicId),
+    getBillingStatus(clinicId),
+    getTrialExtensions(clinicId),
+    getReverificationRequests(clinicId),
+  ]);
+  const tb = await getTranslations("billing");
 
   const t = await getTranslations("admin");
   const to = await getTranslations("onboarding");
@@ -179,6 +188,80 @@ export default async function AdminClinicPage({ params }: PageProps<"/[locale]/a
           </details>
         </CardContent>
       </Card>
+
+      {trial ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <h2 className="text-lg">{tb("adminClinicTitle")}</h2>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 text-sm">
+            {billing ? (
+              <p>
+                {tb(`states.${billing.state}`)} ·{" "}
+                {tb("capacity", { active: billing.active_doctors, capacity: billing.doctor_capacity })}
+              </p>
+            ) : null}
+            <ActionForm action={extendTrial} className="sm:grid-cols-3 sm:items-end" successText={tb("saved")}>
+              <input type="hidden" name="clinicId" value={clinic.id} />
+              <label className="grid gap-1">
+                {tb("extendDays")}
+                <Input name="days" type="number" min={1} max={60} required defaultValue={7} />
+              </label>
+              <label className="grid gap-1 sm:col-span-2">
+                {t("reasonRequired")}
+                <Input name="reason" required maxLength={1000} />
+              </label>
+              <div>
+                <SubmitButton size="sm" variant="outline">
+                  {tb("extendTrial")}
+                </SubmitButton>
+              </div>
+            </ActionForm>
+            {extensions.length > 0 ? (
+              <ul className="grid gap-1 text-xs text-muted-foreground">
+                {extensions.map((e) => (
+                  <li key={e.id}>
+                    {formatDate(e.created_at)} · +{e.days} · {e.reason}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            <ActionForm
+              action={requestReverification}
+              className="sm:grid-cols-3 sm:items-end"
+              successText={tb("saved")}
+            >
+              <input type="hidden" name="clinicId" value={clinic.id} />
+              <label className="grid gap-1">
+                {tb("licenseType")}
+                <select name="licenseType" className="h-9 rounded-md border border-input bg-background px-2">
+                  {LICENSE_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {to(`types.${type}`)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="grid gap-1 sm:col-span-2">
+                {t("reasonRequired")}
+                <Input name="reason" required maxLength={1000} />
+              </label>
+              <div>
+                <SubmitButton size="sm" variant="outline">
+                  {tb("requestReverification")}
+                </SubmitButton>
+              </div>
+            </ActionForm>
+            {reverifications.map((r) => (
+              <p key={r.id} className="text-xs">
+                {tb("reverificationOpen", { type: to(`types.${r.license_type as "clinic_operating"}`) })}
+              </p>
+            ))}
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }

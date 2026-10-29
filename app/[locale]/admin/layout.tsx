@@ -24,6 +24,9 @@ export default async function AdminLayout({ children, params }: LayoutProps<"/[l
           <Link href="/admin/messaging" className="text-sm">
             {t("messagingLink")}
           </Link>
+          <Link href="/admin/billing" className="text-sm">
+            {t("billingLink")}
+          </Link>
         </nav>
         <div className="flex items-center gap-2">
           <LocaleSwitcher />

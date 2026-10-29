@@ -7,6 +7,7 @@ import { SideNav } from "@/components/shell/side-nav";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { signOut } from "@/lib/auth/actions";
+import { getBillingStatus } from "@/modules/billing/queries";
 import { getWorkspace } from "@/modules/tenancy/workspace";
 
 export default async function AppLayout({ children }: LayoutProps<"/[locale]/app">) {
@@ -16,10 +17,25 @@ export default async function AppLayout({ children }: LayoutProps<"/[locale]/app
   if (!workspace) redirect(`/${locale}/login`);
   const { active, clinics, capabilities, doctorId, isPlatformAdmin } = workspace;
   const t = await getTranslations("shell");
+  const tb = await getTranslations("billing");
+  const billing = active && active.accountState === "active" ? await getBillingStatus(active.clinicId) : null;
 
   return (
     <div className="flex min-h-dvh flex-col">
       <DevNotice />
+      {billing && (billing.state === "restricted" || billing.state === "grace") ? (
+        <div role="status" className="border-b border-warning bg-warning/10 px-4 py-2 text-sm sm:px-6">
+          {tb(billing.state === "restricted" ? "restrictedBanner" : "graceBanner")}
+          {active?.role === "owner" ? (
+            <>
+              {" "}
+              <Link href="/app/subscription" className="underline">
+                {tb("title")}
+              </Link>
+            </>
+          ) : null}
+        </div>
+      ) : null}
       <header className="flex items-center justify-between gap-3 border-b px-4 py-2 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           {active ? (

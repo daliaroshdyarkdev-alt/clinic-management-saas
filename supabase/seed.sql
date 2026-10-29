@@ -79,3 +79,13 @@ insert into public.platform_admins (user_id) values ('11111111-1111-4111-8111-00
 insert into public.clinic_subscriptions (clinic_id, trial_started_at, trial_ends_at)
 select id, activated_at, activated_at + interval '14 days' from public.clinics
 where id in ('22222222-2222-4222-8222-00000000000a', '22222222-2222-4222-8222-00000000000b');
+
+-- Synthetic demo plan for local development only. Real tiers and EGP prices
+-- are OPEN (SUB-011, OD-B05) and are configured by a platform admin.
+insert into public.platform_plans (id, code, name_ar, name_en) values
+  ('33333333-3333-4333-8333-000000000001', 'demo_basic', 'خطة تجريبية', 'Synthetic demo plan');
+insert into public.plan_versions (plan_id, version, doctor_limit, monthly_price_minor, annual_price_minor,
+                                  extra_doctor_monthly_minor, extra_doctor_annual_minor, messaging_allowance,
+                                  messaging_overage_unit_minor, published_by)
+values ('33333333-3333-4333-8333-000000000001', 1, 2, 100000, 1000000, 30000, 300000, 200, 50,
+        '11111111-1111-4111-8111-000000000008');

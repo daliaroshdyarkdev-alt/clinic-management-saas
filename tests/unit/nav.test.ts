@@ -47,7 +47,7 @@ describe("role-aware navigation", () => {
     expect(keys("manager", ["finance.reports"])).not.toContain("whatsapp");
   });
 
-  it("subscription is still marked with its milestone", () => {
-    expect(NAV_ITEMS.filter((i) => i.milestone !== null).map((i) => i.key)).toEqual(["subscription"]);
+  it("every navigation item is built", () => {
+    expect(NAV_ITEMS.filter((i) => i.milestone !== null)).toEqual([]);
   });
 });

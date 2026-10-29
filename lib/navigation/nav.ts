@@ -56,7 +56,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     capability: ["appointments.manage", "messaging.send", "messaging.budget"],
     milestone: null,
   },
-  { key: "subscription", href: "/app/subscription", roles: ["owner"], milestone: 6 },
+  { key: "subscription", href: "/app/subscription", roles: ["owner"], milestone: null },
 ];
 
 export function navItemsFor(

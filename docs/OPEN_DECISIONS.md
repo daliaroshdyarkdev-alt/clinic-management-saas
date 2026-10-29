@@ -51,6 +51,9 @@ Owner column: **PO** = product owner, **Legal** = Egyptian legal counsel, **Acct
 | OD-B18 | Manual WhatsApp sending and budget control | WAP-013/014 | Non-blocking | Off for everyone except the owner until the owner grants `messaging.send` / `messaging.budget`. | PO |
 | OD-B19 | Reschedule notices | WAP-002 | Non-blocking | Not emitted (Phase 1 has no reschedule action; a cancel + new booking sends a cancellation). The event switch exists for later. | PO |
 | OD-B20 | Messaging allowance and overage price before plans exist | WAP-013, OD-B05 | Production | Platform settings default to 0 included messages and no overage price, so nothing billable is sent until set. | PO + Acct |
+| OD-B21 | Grace length, trial doctor capacity and operations allowed in restricted mode | SUB-003, SUB-004 | Production | Grace 7 days, 3 doctors during trial (platform settings). Restricted mode stops new bookings, online requests, WhatsApp sending and doctor activation; records, consultations on existing visits, finance and exports keep working; nothing is deleted. | PO + Legal |
+| OD-B22 | Downgrade below the number of active doctors | SUB-002, SUB-008 | Non-blocking | No automatic deactivation at renewal; activations stay blocked until the clinic is within capacity. | PO |
+| OD-B23 | Paying during the trial | SUB-003, SUB-008 | Non-blocking | The paid period starts when the trial ends, so no trial days are lost. | PO |
 | OD-B07 | Platform admin sub-roles, reviewer delegation, incident escalation | ADM-005 | Non-blocking | Single `platform_admin` role. | PO |
 
 ## Providers

@@ -2,7 +2,7 @@
 
 Multi-tenant clinic management web app (Arabic-first, English-capable): appointments and queues, patient records with visit-level medical privacy, operational finance, WhatsApp appointment messaging, staff roles, SaaS billing and platform administration.
 
-> **Status: Milestone 5 (WhatsApp messaging, mock provider) — awaiting authenticated end-to-end verification.** Development build with synthetic data only. Not approved for real patient data: see the legal and hosting blockers in [`docs/OPEN_DECISIONS.md`](docs/OPEN_DECISIONS.md).
+> **Status: Milestone 6 (subscriptions and platform billing, mock gateway) — awaiting authenticated end-to-end verification.** Development build with synthetic data only. Not approved for real patient data: see the legal and hosting blockers in [`docs/OPEN_DECISIONS.md`](docs/OPEN_DECISIONS.md).
 
 ## Documents
 

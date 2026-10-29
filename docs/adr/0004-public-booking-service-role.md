@@ -19,3 +19,7 @@ Patients request appointments and answer alternative proposals without an accoun
 - `modules/messaging/webhook-service.ts` may also use the service client, and only to call `process_whatsapp_webhook` (idempotent per provider event id), after the route has verified Meta's `X-Hub-Signature-256` HMAC. The static test enforces the per-file function allow-list.
 - The background worker (`worker/index.ts`) runs outside Next.js with its own service-role client restricted in code to `worker_*` functions. Those functions are executable only by `service_role`.
 - To send the patient their offer link, the raw offer token is kept in the outbox row (`message_intents.variables`). That column is excluded from every client grant (OD-E12).
+
+## Amendment (Milestone 6 — SaaS billing)
+- `modules/billing/webhook-service.ts` may use the service client only to call `process_payment_webhook`, after the gateway adapter has verified the callback signature. The function is idempotent per provider event id and per payment, and checks the amount against the server-computed price.
+- Prices are always computed in SQL from the plan version; the client never submits an amount.

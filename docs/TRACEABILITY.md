@@ -25,7 +25,7 @@ Conventions used below:
 | INV-5 | Cross-clinic access per clinic + visit, view-only, expiring | `cross_clinic_access_grants` checked on every read | `sec: medical.cross-clinic-*` | M3 | done (per visit + doctor grants; revoked on completion/withdrawal/reassignment) |
 | INV-6 | Finance append-only | No UPDATE/DELETE grants + triggers on posted tables | `db: finance.posted-immutable` | M4 | done (append-only triggers for every role; balanced journal at commit) |
 | INV-7 | No clinical/financial data in telemetry | Redacting logger (`lib/telemetry`), Sentry `beforeSend` scrubber | `unit: telemetry.redaction` | M0 (logger) / M7 | foundation |
-| INV-8 | Idempotent background tasks | Outbox + idempotency keys, unique constraints | `race: worker.duplicate-delivery` | M2/M5 | planned |
+| INV-8 | Idempotent background tasks | Outbox + idempotency keys, unique constraints | `race: worker.duplicate-delivery` | M2/M5 | done (outbox idempotency keys, webhook event ids, one period/receipt per payment) |
 
 ## 3.1 Registration and clinic lifecycle (ONB)
 
@@ -36,7 +36,7 @@ Conventions used below:
 | ONB-003 | platform-admin | `clinic_licenses`, `clinic_review_decisions`, `audit_events` | `rpc: admin_review_clinic` | `(platform-admin)/clinics/pending` | `db: admin.review-logged`, `sec: admin.non-admin-denied` | M1 | done |
 | ONB-004 | onboarding, billing | `clinics.activated_at`, `clinic_subscriptions` (trial) | `rpc: admin_activate_clinic` | admin + clinic status banner | `db: onboarding.trial-starts-once`, `db: onboarding.pending-clinic-cannot-operate` | M1 | done (gate helper `private.clinic_is_operational`; enforced by M2+ functions) |
 | ONB-005 | onboarding | `clinics.account_state`, `clinic_state_events` | `rpc: admin_set_clinic_state` | admin clinic detail | `db: onboarding.state-transitions` | M1 | done (closure final pending OD-B01) |
-| ONB-006 | onboarding | `clinic_licenses` revisions | `action: replaceLicense` | onboarding/licenses | `db: onboarding.reverification` | M6 | planned |
+| ONB-006 | onboarding | `clinic_licenses` revisions | `action: replaceLicense` | onboarding/licenses | `db: onboarding.reverification` | M6 | done |
 | ONB-007 | onboarding | `legal_disclaimer_versions`, `disclaimer_acceptances` | `action: acceptDisclaimer` | register + shell banner | `e2e: disclaimer-shown` | M1 | done with DRAFT text — production blocked (OD-L01) |
 | ONB-008 | billing, appointments | `clinic_doctors`, subscription capacity | `rpc: activate_clinic_doctor` | doctors page | `race: capacity.doctor-activation` | M2/M6 | partial: multiple doctors per clinic (M2); paid capacity limit M6 |
 
@@ -149,24 +149,24 @@ Conventions used below:
 
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
-| SUB-001 | billing | `platform_plans`, `plan_versions` | `rpc: admin_publish_plan_version` | admin plans | `db: plan.versioned` | M6 | planned (prices blocked OD-B05) |
-| SUB-002 | billing | `clinic_doctors.status` | `rpc: activate_clinic_doctor` | doctors | `race: capacity` | M6 | planned |
-| SUB-003 | billing | `clinic_subscriptions` trial fields, `trial_extensions` | `rpc: admin_extend_trial` | admin | `db: trial.once`, `db: extension.admin-only` | M1 (start) / M6 | partial: trial starts once at activation (M1); extension M6 |
-| SUB-004 | billing | grace config | entitlement check `private.clinic_entitlement()` | banner | `db: grace.no-erasure` | M6 | blocked (grace operations, OD-B05) |
-| SUB-005 | billing | plan_versions periods | — | pricing | `unit: period-dates` | M6 | planned |
-| SUB-006 | billing | `subscription_payments` | `PaymentProvider` adapter, `rpc: admin_verify_manual_payment` | billing, admin | `sec: manual-evidence-no-entitlement`, `race: payment-webhook.replay` | M6 | blocked for real gateway (OD-P02); mock proceeds |
-| SUB-007 | billing | `subscription_renewal_authorizations` | provider adapter | billing | `unit: renewal` | M6 | blocked (OD-P02) |
-| SUB-008 | billing | `plan_change_requests.effective_renewal` | `rpc: request_plan_change` | billing | `db: plan-change.not-early` | M6 | planned |
-| SUB-009 | billing | `subscription_receipts` | `route: receipt` | billing | `e2e: receipt-download` | M6 | planned (tax invoice blocked OD-L04) |
-| SUB-010 | billing | plan versions + clinic snapshots | admin RPCs | admin plans | `db: snapshot-stable-on-catalog-change` | M6 | planned |
+| SUB-001 | billing | `platform_plans`, `plan_versions` | `rpc: admin_publish_plan_version` | admin plans | `db: plan.versioned` | M6 | done (mechanism; tiers/prices OD-B05) |
+| SUB-002 | billing | `clinic_doctors.status` | `rpc: activate_clinic_doctor` | doctors | `race: capacity` | M6 | done |
+| SUB-003 | billing | `clinic_subscriptions` trial fields, `trial_extensions` | `rpc: admin_extend_trial` | admin | `db: trial.once`, `db: extension.admin-only` | M1 (start) / M6 | done |
+| SUB-004 | billing | grace config | entitlement check `private.clinic_entitlement()` | banner | `db: grace.no-erasure` | M6 | done (grace + restricted mode; defaults OD-B21) |
+| SUB-005 | billing | plan_versions periods | — | pricing | `unit: period-dates` | M6 | done |
+| SUB-006 | billing | `subscription_payments` | `PaymentProvider` adapter, `rpc: admin_verify_manual_payment` | billing, admin | `sec: manual-evidence-no-entitlement`, `race: payment-webhook.replay` | M6 | done (mock gateway + manual evidence; real gateway OD-P02) |
+| SUB-007 | billing | `subscription_renewal_authorizations` | provider adapter | billing | `unit: renewal` | M6 | blocked (OD-P02): manual renewal only |
+| SUB-008 | billing | `plan_change_requests.effective_renewal` | `rpc: request_plan_change` | billing | `db: plan-change.not-early` | M6 | done |
+| SUB-009 | billing | `subscription_receipts` | `route: receipt` | billing | `e2e: receipt-download` | M6 | done (receipts; tax invoice OD-L04) |
+| SUB-010 | billing | plan versions + clinic snapshots | admin RPCs | admin plans | `db: snapshot-stable-on-catalog-change` | M6 | done |
 | SUB-011 | — | — | — | — | — | — | blocked (OD-B05, OD-P02, OD-L04) |
 
 ## 3.9 Platform administration and support (ADM)
 
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
-| ADM-001 | platform-admin | `platform_admins`, `clinic_licenses`, `clinic_state_events` | admin RPCs | `(platform-admin)/*` | `sec: admin.non-admin-denied` | M1 / M6 | partial: review, activation, suspend/reactivate/close (M1); re-verification M6 |
-| ADM-002 | platform-admin, billing | trial extensions, payments, plan versions | admin RPCs | admin | `db: admin.actions-audited` | M6 | planned |
+| ADM-001 | platform-admin | `platform_admins`, `clinic_licenses`, `clinic_state_events` | admin RPCs | `(platform-admin)/*` | `sec: admin.non-admin-denied` | M1 / M6 | done (incl. re-verification requests) |
+| ADM-002 | platform-admin, billing | trial extensions, payments, plan versions | admin RPCs | admin | `db: admin.actions-audited` | M6 | done |
 | ADM-003 | platform-admin | no admin RLS path into clinic data | — | — | `sec: admin.no-clinic-data` (M0 for tenancy tables, extended each milestone) | M0+ | foundation (admin read paths limited to clinic metadata, licences, owner profile; tested) |
 | ADM-004 | — | — | — | — | default deny, test asserts no impersonation path | — | blocked (Q97 / OD-S01) |
 | ADM-005 | — | — | — | — | — | — | blocked (OD-B07) |

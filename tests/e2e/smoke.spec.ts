@@ -126,3 +126,15 @@ test("WhatsApp settings require sign-in", async ({ page }) => {
   await page.goto("/en/app/whatsapp");
   await expect(page).toHaveURL(/\/en\/login\?next=%2Fen%2Fapp%2Fwhatsapp$/);
 });
+
+test("payment webhook is closed when no gateway is configured", async ({ request }) => {
+  const response = await request.post("/api/webhooks/payments", { data: {} });
+  expect(response.status()).toBe(404);
+});
+
+test("subscription page and billing evidence require sign-in", async ({ page, request }) => {
+  await page.goto("/en/app/subscription");
+  await expect(page).toHaveURL(/\/en\/login\?next=%2Fen%2Fapp%2Fsubscription$/);
+  const evidence = await request.get("/api/billing/evidence/00000000-0000-4000-8000-000000000000", { maxRedirects: 0 });
+  expect(evidence.status()).toBe(401);
+});
