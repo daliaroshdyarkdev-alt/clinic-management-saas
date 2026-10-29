@@ -317,7 +317,11 @@
     "request_pending": "A request is already waiting for this.",
     "session_already_open": "A session is already open for you or this drawer.",
     "sessions_not_closed": "All cashier sessions of the day must be closed first.",
-    "platform_managed_by_admin": "Platform-managed numbers are set up by the platform team."
+    "platform_managed_by_admin": "Platform-managed numbers are set up by the platform team.",
+    "subscription_restricted": "The subscription has expired. Renew it to add bookings, requests, messages or doctors; existing records stay available.",
+    "doctor_capacity_reached": "Doctor capacity is full. Deactivate a doctor or add capacity at your next renewal.",
+    "plan_not_available": "This plan or billing period is not available.",
+    "subscription_not_found": "No subscription exists for this clinic yet."
   },
   "weekdays": {
     "0": "Sunday",

@@ -111,6 +111,13 @@ export async function createClinic(
     "insert into public.clinics (name, account_state) values ($1, $2) returning id",
     [name, state],
   );
+  if (state !== "pending") {
+    // Activated clinics always have a subscription row (trial started at activation).
+    await adminPool().query(
+      "insert into public.clinic_subscriptions (clinic_id, trial_started_at, trial_ends_at) values ($1, now() - interval '90 days', now() + interval '13 days')",
+      [rows[0].id],
+    );
+  }
   return rows[0].id;
 }
 
