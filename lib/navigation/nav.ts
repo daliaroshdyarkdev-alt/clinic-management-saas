@@ -25,8 +25,8 @@ export type NavItem = {
   href: string;
   /** Roles that always see the item. */
   roles: readonly ClinicRole[];
-  /** Also shown to holders of this capability (owner-granted or implicit). */
-  capability?: ClinicCapability;
+  /** Also shown to holders of any of these capabilities (owner-granted or implicit). */
+  capability?: ClinicCapability | readonly ClinicCapability[];
   /** Also shown to users who are an active doctor of the clinic. */
   doctors?: boolean;
   milestone: number | null;
@@ -42,7 +42,13 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { key: "doctors", href: "/app/doctors", roles: ["owner"], doctors: true, milestone: null },
   { key: "staff", href: "/app/staff", roles: ["owner"], capability: "staff.manage", milestone: null },
   { key: "onboarding", href: "/app/onboarding", roles: ["owner"], milestone: null },
-  { key: "finance", href: "/app/finance", roles: ["owner", "cashier"], milestone: 4 },
+  {
+    key: "finance",
+    href: "/app/finance",
+    roles: ["owner"],
+    capability: ["finance.collect", "finance.approve", "finance.reports", "finance.accounts"],
+    milestone: null,
+  },
   { key: "whatsapp", href: "/app/whatsapp", roles: ["owner"], milestone: 5 },
   { key: "subscription", href: "/app/subscription", roles: ["owner"], milestone: 6 },
 ];
@@ -55,7 +61,8 @@ export function navItemsFor(
   return NAV_ITEMS.filter(
     (item) =>
       item.roles.includes(role) ||
-      (item.capability !== undefined && capabilities.includes(item.capability)) ||
+      (item.capability !== undefined &&
+        (Array.isArray(item.capability) ? item.capability : [item.capability]).some((c) => capabilities.includes(c))) ||
       (item.doctors === true && options.isDoctor === true),
   );
 }

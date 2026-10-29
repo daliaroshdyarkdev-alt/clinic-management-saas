@@ -2,7 +2,20 @@ export const ACTIVE_CLINIC_COOKIE = "active_clinic_id";
 
 export type ClinicRole = "owner" | "manager" | "receptionist" | "cashier" | "doctor";
 export type ClinicAccountState = "pending" | "active" | "suspended" | "closed";
-export type ClinicCapability = "staff.manage" | "appointments.manage";
+export type ClinicCapability =
+  | "staff.manage"
+  | "appointments.manage"
+  | "finance.collect"
+  | "finance.approve"
+  | "finance.reports"
+  | "finance.accounts";
+
+export const FINANCE_CAPABILITIES = [
+  "finance.collect",
+  "finance.approve",
+  "finance.reports",
+  "finance.accounts",
+] as const;
 
 export type WorkspaceClinic = {
   clinicId: string;

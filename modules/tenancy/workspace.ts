@@ -6,6 +6,7 @@ import { getCurrentUser, type CurrentUser } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   ACTIVE_CLINIC_COOKIE,
+  FINANCE_CAPABILITIES,
   resolveActiveClinic,
   type ClinicCapability,
   type WorkspaceClinic,
@@ -71,9 +72,7 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
 
   let capabilities: ClinicCapability[] = [];
   if (active?.role === "owner") {
-    capabilities = ["staff.manage", "appointments.manage"];
-  } else if (active?.role === "receptionist") {
-    capabilities = ["appointments.manage"];
+    capabilities = ["staff.manage", "appointments.manage", ...FINANCE_CAPABILITIES];
   } else if (active) {
     const { data, error } = await supabase
       .from("clinic_role_permissions")
@@ -81,11 +80,15 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
       .eq("clinic_id", active.clinicId)
       .eq("role", active.role);
     if (error) throw new Error("Failed to load permissions");
-    capabilities = z
+    const granted = z
       .array(permissionRowSchema)
       .parse(data)
       .filter((p) => p.allowed)
       .map((p) => p.capability);
+    // Implicit role capabilities, mirroring the SQL helpers.
+    const implicit: ClinicCapability[] =
+      active.role === "receptionist" ? ["appointments.manage"] : active.role === "cashier" ? ["finance.collect"] : [];
+    capabilities = [...new Set([...implicit, ...granted])];
   }
 
   let doctorId: string | null = null;

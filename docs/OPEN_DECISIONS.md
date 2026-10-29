@@ -46,6 +46,8 @@ Owner column: **PO** = product owner, **Legal** = Egyptian legal counsel, **Acct
 | OD-B13 | Minimal patient registry delivered with Milestone 2 (needed for booking) before duplicate detection (M3) | PAT-001/002 | Non-blocking | Every registration creates its own identity; nothing is linked or merged automatically. | PO |
 | OD-B14 | May doctors of the same clinic see each other's consultations for a shared patient? | MED-005 | Feature | No: each doctor sees only the visits assigned to them. | PO + clinical advisor |
 | OD-B15 | Matching rule for a patient's records in other clinics (after consent) | PAT-004, MED-006 | Production | Same mobile and birth date, plus same ID when both records have one; the treated patient must match too. | PO + Legal |
+| OD-B16 | Default finance approval rules before the owner saves any | FIN-005..008, FIN-012 | Non-blocking | Most restrictive: every expense/transfer/refund needs approval, discrepancies need approval, daily close needs approval. | PO |
+| OD-B17 | Should discrepancies post an adjusting entry to the ledger? | FIN-005 | Feature | No: counts and differences are recorded on the session only (needs accountant input). | Acct |
 | OD-B07 | Platform admin sub-roles, reviewer delegation, incident escalation | ADM-005 | Non-blocking | Single `platform_admin` role. | PO |
 
 ## Providers

@@ -427,3 +427,36 @@ describe("daily closing and reports (FIN-012/013)", () => {
     expect(rows[0].ok).toBe(true);
   });
 });
+
+describe("finance helpers", () => {
+  it("cashiers resolve patients and recipients without registry access; others cannot", async () => {
+    const patient = await createPatient(f.clinicId, f.receptionist, "Synthetic Payer");
+    const { rows } = await adminPool().query("select chart_number from public.clinic_patients where id = $1", [
+      patient,
+    ]);
+    const found = await q(f.cashier, "select to_jsonb(p) as r from public.finance_find_patient($1, $2) p", [
+      f.clinicId,
+      rows[0].chart_number,
+    ]);
+    expect(found).toEqual({ clinic_patient_id: patient, full_name: "Synthetic Payer" });
+    await asUser(f.doctorUser, (db) =>
+      expectPgError(db.query("select * from public.finance_find_patient($1, 1)", [f.clinicId]), /forbidden/),
+    );
+    const recipients = await asUser(f.cashier, async (db) =>
+      (await db.query("select user_id from public.finance_handover_recipients($1)", [f.clinicId])).rows.map(
+        (r) => r.user_id,
+      ),
+    );
+    expect(recipients).toEqual([f.owner]);
+  });
+
+  it("receipts are available to the poster and approvers only", async () => {
+    await openSession();
+    const txn = await pay(1234);
+    const receipt = await q(f.cashier, "select public.finance_receipt($1) as r", [txn]);
+    expect(receipt).toMatchObject({ amount_minor: 1234, kind: "payment", reversed: false });
+    await asUser(f.receptionist, (db) =>
+      expectPgError(db.query("select public.finance_receipt($1)", [txn]), /forbidden/),
+    );
+  });
+});

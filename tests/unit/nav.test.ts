@@ -18,8 +18,9 @@ describe("role-aware navigation", () => {
     expect(keys("doctor", [], { isDoctor: true })).toEqual(["overview", "myQueue", "doctors"]);
   });
 
-  it("cashier sees finance only", () => {
-    expect(keys("cashier")).toEqual(["overview", "finance"]);
+  it("cashier (implicit finance.collect) sees finance only", () => {
+    expect(keys("cashier", ["finance.collect"])).toEqual(["overview", "finance"]);
+    expect(keys("cashier")).toEqual(["overview"]);
   });
 
   it("a manager sees appointment and staff screens only when the owner granted them", () => {
@@ -40,11 +41,7 @@ describe("role-aware navigation", () => {
     expect(keys("owner", ["staff.manage", "appointments.manage"])).not.toContain("myQueue");
   });
 
-  it("finance, WhatsApp and subscription are still marked with their milestones", () => {
-    expect(NAV_ITEMS.filter((i) => i.milestone !== null).map((i) => i.key)).toEqual([
-      "finance",
-      "whatsapp",
-      "subscription",
-    ]);
+  it("WhatsApp and subscription are still marked with their milestones", () => {
+    expect(NAV_ITEMS.filter((i) => i.milestone !== null).map((i) => i.key)).toEqual(["whatsapp", "subscription"]);
   });
 });

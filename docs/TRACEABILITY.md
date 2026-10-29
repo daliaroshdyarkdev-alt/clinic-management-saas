@@ -23,7 +23,7 @@ Conventions used below:
 | INV-3 | Clinic switch invalidates cached clinic data | Switch = server action → cookie → `router.refresh()`; clinic shell keyed by `clinicId` so client state remounts; query keys prefixed by `clinicId` | `e2e: clinic-switch.isolation` (M1) | M0/M1 | foundation |
 | INV-4 | Medical content only for assigned open visit | Separate `clinical` schema, visit-scoped policy functions | `sec: medical.non-treating-denied` | M3 | done (clinical schema unexposed; treating-doctor gateway functions) |
 | INV-5 | Cross-clinic access per clinic + visit, view-only, expiring | `cross_clinic_access_grants` checked on every read | `sec: medical.cross-clinic-*` | M3 | done (per visit + doctor grants; revoked on completion/withdrawal/reassignment) |
-| INV-6 | Finance append-only | No UPDATE/DELETE grants + triggers on posted tables | `db: finance.posted-immutable` | M4 | planned |
+| INV-6 | Finance append-only | No UPDATE/DELETE grants + triggers on posted tables | `db: finance.posted-immutable` | M4 | done (append-only triggers for every role; balanced journal at commit) |
 | INV-7 | No clinical/financial data in telemetry | Redacting logger (`lib/telemetry`), Sentry `beforeSend` scrubber | `unit: telemetry.redaction` | M0 (logger) / M7 | foundation |
 | INV-8 | Idempotent background tasks | Outbox + idempotency keys, unique constraints | `race: worker.duplicate-delivery` | M2/M5 | planned |
 
@@ -93,21 +93,21 @@ Conventions used below:
 
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
-| FIN-001 | finance | `finance.payments`, `finance.financial_transactions` | `rpc: post_payment` | cashier | `db: payments.recorded` | M4 | planned |
-| FIN-002 | finance | `finance.financial_accounts`, `finance.journal_entries` | `rpc: post_transfer` | accounts | `db: transfer-not-revenue` | M4 | planned |
-| FIN-003 | finance | `finance.opening_balance_requests` | `rpc: approve_opening_balance` | accounts | `sec: opening-balance.owner-only` | M4 | planned |
-| FIN-004 | finance | `finance.cashier_sessions`, `finance.cashier_handovers` | `rpc: open/close_cashier_session`, `rpc: acknowledge_handover` | cashier shift | `race: handover.concurrent` | M4 | planned |
-| FIN-005 | finance | session discrepancy fields, policy | `rpc: close_cashier_session` | cashier shift | `db: discrepancy.preserved` | M4 | planned |
-| FIN-006 | finance | `finance.expenses`, approvals | `rpc: submit/approve_expense` | expenses | `db: expense.policy` | M4 | planned |
-| FIN-007 | finance | `finance.transfers`, approvals | `rpc: submit/approve_transfer` | transfers | `db: transfer.policy` | M4 | planned |
-| FIN-008 | finance | `finance.refund_requests`, `finance.refunds` | `rpc: request/approve_refund` | refunds | `db: refund.linked-payout` | M4 | planned |
-| FIN-009 | finance | `finance.financial_reversals` | `rpc: reverse_transaction` | transaction detail | `db: reversal.reconciles` | M4 | planned |
-| FIN-010 | finance, permissions | permission grants | — | permissions page | `sec: finance.non-granted-denied`, `sec: admin.no-finance` | M4 | planned |
-| FIN-011 | finance | `finance.receipts` | `route: receipt pdf` | receipt | `e2e: receipt` | M4 | planned (tax claim blocked OD-L04) |
-| FIN-012 | finance | `finance.daily_financial_closings` | `rpc: submit/approve_daily_close` | daily close | `db: closing.policy` | M4 | planned |
-| FIN-013 | finance | reporting views over posted journal | `action: report queries` | reports | `db: reports.reconcile-with-journal` | M4 | planned |
-| FIN-014 | finance, onboarding | export jobs | `rpc: request_finance_export` | settings/export | `db: export.audited` | M4/M6 | planned (retention blocked OD-L03) |
-| FIN-015 | finance | integer `amount_minor`, balanced journal check | — | — | `unit: money`, `db: journal.balanced` | M4 | planned |
+| FIN-001 | finance | `finance.payments`, `finance.financial_transactions` | `rpc: post_payment` | cashier | `db: payments.recorded` | M4 | done (manual entry; no settlement verification by design) |
+| FIN-002 | finance | `finance.financial_accounts`, `finance.journal_entries` | `rpc: post_transfer` | accounts | `db: transfer-not-revenue` | M4 | done |
+| FIN-003 | finance | `finance.opening_balance_requests` | `rpc: approve_opening_balance` | accounts | `sec: opening-balance.owner-only` | M4 | done |
+| FIN-004 | finance | `finance.cashier_sessions`, `finance.cashier_handovers` | `rpc: open/close_cashier_session`, `rpc: acknowledge_handover` | cashier shift | `race: handover.concurrent` | M4 | done |
+| FIN-005 | finance | session discrepancy fields, policy | `rpc: close_cashier_session` | cashier shift | `db: discrepancy.preserved` | M4 | done |
+| FIN-006 | finance | `finance.expenses`, approvals | `rpc: submit/approve_expense` | expenses | `db: expense.policy` | M4 | done |
+| FIN-007 | finance | `finance.transfers`, approvals | `rpc: submit/approve_transfer` | transfers | `db: transfer.policy` | M4 | done |
+| FIN-008 | finance | `finance.refund_requests`, `finance.refunds` | `rpc: request/approve_refund` | refunds | `db: refund.linked-payout` | M4 | done for full refunds; partial refunds OPEN (FIN-016) |
+| FIN-009 | finance | `finance.financial_reversals` | `rpc: reverse_transaction` | transaction detail | `db: reversal.reconciles` | M4 | done |
+| FIN-010 | finance, permissions | permission grants | — | permissions page | `sec: finance.non-granted-denied`, `sec: admin.no-finance` | M4 | done |
+| FIN-011 | finance | `finance.receipts` | `route: receipt pdf` | receipt | `e2e: receipt` | M4 | done: internal receipt (print/download via browser); WhatsApp delivery M5; tax e-receipt OPEN (OD-L04) |
+| FIN-012 | finance | `finance.daily_financial_closings` | `rpc: submit/approve_daily_close` | daily close | `db: closing.policy` | M4 | done |
+| FIN-013 | finance | reporting views over posted journal | `action: report queries` | reports | `db: reports.reconcile-with-journal` | M4 | done |
+| FIN-014 | finance, onboarding | export jobs | `rpc: request_finance_export` | settings/export | `db: export.audited` | M4/M6 | done: CSV export of transactions with journal lines (audited); retention OPEN (OD-L03) |
+| FIN-015 | finance | integer `amount_minor`, balanced journal check | — | — | `unit: money`, `db: journal.balanced` | M4 | done |
 | FIN-016 | — | — | — | — | — | — | blocked (OD-B06) |
 
 ## 3.6 WhatsApp transactional communication (WAP)
