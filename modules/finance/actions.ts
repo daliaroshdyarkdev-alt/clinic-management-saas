@@ -179,13 +179,11 @@ export async function approveSession(_prev: ActionState, formData: FormData): Pr
 export async function createHandover(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const locale = localeFrom(formData);
   const amount = amountFrom(formData);
-  const parsed = z
-    .object({ sessionId: z.uuid(), toUserId: z.uuid(), toAccountId: z.uuid() })
-    .safeParse({
-      sessionId: formData.get("sessionId"),
-      toUserId: formData.get("toUserId"),
-      toAccountId: formData.get("toAccountId"),
-    });
+  const parsed = z.object({ sessionId: z.uuid(), toUserId: z.uuid(), toAccountId: z.uuid() }).safeParse({
+    sessionId: formData.get("sessionId"),
+    toUserId: formData.get("toUserId"),
+    toAccountId: formData.get("toAccountId"),
+  });
   if (!parsed.success || amount === null || amount <= 0) return { error: "invalid_input" };
   const result = await callRpc("create_cash_handover", {
     p_session_id: parsed.data.sessionId,
