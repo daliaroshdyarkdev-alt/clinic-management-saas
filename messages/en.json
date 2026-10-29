@@ -552,7 +552,8 @@
     "privacy": "Your name and mobile number are shared only with this clinic to handle your request.",
     "sending": "Sending…",
     "submit": "Send request",
-    "submitted": "Request sent. This is not yet a confirmed appointment — the clinic will contact you."
+    "submitted": "Request sent. This is not yet a confirmed appointment — the clinic will contact you.",
+    "whatsappConsent": "Send me WhatsApp messages about this booking (confirmations, reminders and changes). You can withdraw this at any time by asking the clinic."
   },
   "offer": {
     "title": "Proposed appointment",

@@ -23,7 +23,7 @@ const submit = (clinicId: string, sessionId: string, phone = "+201000000050", st
     async (db) =>
       (
         await db.query<{ id: string }>(
-          "select public.public_submit_booking_request($1, $2, $3, 'Synthetic Requester', $4) as id",
+          "select public.public_submit_booking_request($1, $2, $3, 'Synthetic Requester', $4, true) as id",
           [clinicId, sessionId, startsAt, phone],
         )
       ).rows[0].id,
@@ -52,7 +52,7 @@ describe("public side", () => {
     );
     await asUser(f.receptionist, (db) =>
       expectPgError(
-        db.query("select public.public_submit_booking_request($1, $2, null, 'X Y', '+201000000000')", [
+        db.query("select public.public_submit_booking_request($1, $2, null, 'X Y', '+201000000000', true)", [
           f.clinicId,
           session,
         ]),

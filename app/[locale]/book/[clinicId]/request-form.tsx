@@ -47,6 +47,10 @@ export function RequestForm({ clinicId, groups }: { clinicId: string; groups: Sl
           autoComplete="tel"
         />
       </label>
+      <label className="flex items-start gap-2 text-sm">
+        <input type="checkbox" name="whatsappConsent" value="yes" className="mt-1" />
+        <span>{t("whatsappConsent")}</span>
+      </label>
       <p className="text-xs text-muted-foreground">{t("privacy")}</p>
       <FormError code={state.error} />
       <SubmitButton pendingLabel={t("sending")}>{t("submit")}</SubmitButton>

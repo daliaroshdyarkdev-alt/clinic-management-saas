@@ -31,7 +31,12 @@ export async function submitRequest(_prev: PublicState, formData: FormData): Pro
       phone: formData.get("phone"),
     });
   if (!parsed.success) return { error: "invalid_request" };
-  const error = await submitBookingRequest({ ...parsed.data, startsAt: parsed.data.startsAt ?? null });
+  const error = await submitBookingRequest({
+    ...parsed.data,
+    startsAt: parsed.data.startsAt ?? null,
+    // WAP-008: unticked by default; only an explicit tick counts as consent.
+    whatsappConsent: formData.get("whatsappConsent") === "yes",
+  });
   return error ? { error } : { error: null, outcome: "submitted" };
 }
 

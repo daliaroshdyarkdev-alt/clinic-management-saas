@@ -42,6 +42,7 @@ export async function submitBookingRequest(input: {
   startsAt: string | null;
   name: string;
   phone: string;
+  whatsappConsent: boolean;
 }): Promise<DomainErrorCode | null> {
   const { error } = await createSupabaseServiceClient().rpc("public_submit_booking_request", {
     p_clinic_id: input.clinicId,
@@ -49,6 +50,7 @@ export async function submitBookingRequest(input: {
     p_starts_at: input.startsAt,
     p_name: input.name,
     p_phone_e164: input.phone,
+    p_whatsapp_consent: input.whatsappConsent,
   });
   return error ? toDomainError(error) : null;
 }

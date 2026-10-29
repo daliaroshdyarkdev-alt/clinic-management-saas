@@ -95,7 +95,7 @@ describe("parallel bookings", () => {
     const tokens: string[] = [];
     for (let i = 0; i < 2; i++) {
       const { rows } = await asCommitted("service_role", null, (db) =>
-        db.query<{ id: string }>("select public.public_submit_booking_request($1, $2, null, $3, $4) as id", [
+        db.query<{ id: string }>("select public.public_submit_booking_request($1, $2, null, $3, $4, false) as id", [
           f.clinicId,
           requested,
           `Synthetic Requester ${i}`,
