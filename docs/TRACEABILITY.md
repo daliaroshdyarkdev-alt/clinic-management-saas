@@ -38,15 +38,15 @@ Conventions used below:
 | ONB-005 | onboarding | `clinics.account_state`, `clinic_state_events` | `rpc: admin_set_clinic_state` | admin clinic detail | `db: onboarding.state-transitions` | M1 | done (closure final pending OD-B01) |
 | ONB-006 | onboarding | `clinic_licenses` revisions | `action: replaceLicense` | onboarding/licenses | `db: onboarding.reverification` | M6 | planned |
 | ONB-007 | onboarding | `legal_disclaimer_versions`, `disclaimer_acceptances` | `action: acceptDisclaimer` | register + shell banner | `e2e: disclaimer-shown` | M1 | done with DRAFT text — production blocked (OD-L01) |
-| ONB-008 | billing, appointments | `clinic_doctors`, subscription capacity | `rpc: activate_clinic_doctor` | doctors page | `race: capacity.doctor-activation` | M2/M6 | planned |
+| ONB-008 | billing, appointments | `clinic_doctors`, subscription capacity | `rpc: activate_clinic_doctor` | doctors page | `race: capacity.doctor-activation` | M2/M6 | partial: multiple doctors per clinic (M2); paid capacity limit M6 |
 
 ## 3.2 Patient registry and identity (PAT)
 
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
-| PAT-001 | patients | `patient_identities`, `clinic_patients` | `action: registerPatient` | patients/new | `db: patients.cross-tenant-denied` | M3 | blocked (ID type, OD-B02) — other fields can proceed |
+| PAT-001 | patients | `patient_identities`, `clinic_patients` | `action: registerPatient` | patients/new | `db: patients.cross-tenant-denied` | M3 | partial: minimal registry for booking (M2); duplicates and identity linking M3; ID type OPEN |
 | PAT-002 | patients | `duplicate_candidates` | `rpc: detect_duplicate_candidates` | patients/duplicates | `db: patients.no-auto-merge` | M3 | planned |
-| PAT-003 | patients | `patient_identities` ↔ `clinic_patients` | — | — | `sec: patients.other-clinic-chart-hidden` | M3 | planned |
+| PAT-003 | patients | `patient_identities` ↔ `clinic_patients` | — | — | `sec: patients.other-clinic-chart-hidden` | M3 | model in place (identity + clinic patient); cross-clinic linking M3 |
 | PAT-004 | patients, consent | `cross_clinic_access_grants` | — | — | `sec: medical.identity-match-no-access` | M3 | planned |
 | PAT-005 | patients, audit | masking views | `lib/privacy/mask` | all patient lists | `unit: mask`, `db: audit.no-pii-payload` | M3 | planned |
 | PAT-006 | — | — | — | — | — | — | blocked (OD-B02) |
@@ -55,22 +55,22 @@ Conventions used below:
 
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
-| APT-001 | appointments | `appointments`, `appointment_requests` | `action: createAppointment`, `route: public booking` | appointments, `(public)/book/[clinic]` | `db: appointments.receptionist-create`, `sec: public-request-not-final` | M2 | planned |
-| APT-002 | appointments | `appointment_requests`, `alternative_offers` | `rpc: review_booking_request` | requests inbox | `db: requests.state-machine` | M2 | planned |
-| APT-003 | appointments | `alternative_offers` (no hold) | `rpc: accept_alternative_offer` | patient link | `race: offers.last-slot-accept` | M2 | planned |
-| APT-004 | appointments | `doctor_scheduling_policies.method` | `action: updateSchedulingPolicy` | doctor settings | `unit: policy.schema` | M2 | planned |
-| APT-005 | appointments | `doctor_weekly_schedules`, `doctor_schedule_exceptions`, `doctor_sessions` | `rpc: materialize_sessions` | schedule editor | `unit: schedule.recurrence (Africa/Cairo)` | M2 | planned |
-| APT-006 | queue | `queue_reservations`, `queue_checkins` | `rpc: confirm_queue_reservation`, `rpc: check_in` | check-in queue | `race: queue.numbers-unique` | M2 | planned |
-| APT-007 | queue | policy JSON | `modules/queue/ordering` | queue view | `unit: queue.ordering` | M2 | blocked (hybrid formula, OD-B04) — FCFS & priority proceed |
-| APT-008 | queue | policy JSON | `rpc: apply_late_arrival` | queue view | `unit: late-arrival` | M2 | blocked (thresholds, OD-B04) — receptionist-control mode proceeds |
-| APT-009 | queue | policy JSON | `rpc: add_walk_in` | queue view | `race: queue.walk-in` | M2 | planned |
-| APT-010 | queue | policy JSON | `rpc: mark_absent_when_called` | queue view | `unit: absent-policy` | M2 | planned |
-| APT-011 | appointments | `overbooking_approvals` | `rpc: request_overbooking` | appointments | `sec: overbooking.no-bypass` | M2 | planned |
-| APT-012 | appointments | `doctor_sessions.status`, events | `rpc: cancel_doctor_session` | schedule | `db: session-cancel.affected` | M2 | planned |
-| APT-013 | appointments | policy JSON | `rpc: patient_cancel_or_reschedule` | patient link | `db: patient-cancel.policy` | M2 | planned |
-| APT-014 | appointments | policy JSON, `appointment_events` | `rpc: mark_no_show` | appointments | `unit: no-show` | M2 | blocked (auto thresholds, OD-B04) — manual mode proceeds |
-| APT-015 | appointments, permissions | permission grants | — | — | `sec: receptionist.no-medical` | M2/M3 | planned |
-| APT-016 | appointments | exclusion constraints / row locks, `appointment_events` | all booking RPCs | — | `race: booking.*` | M2 | planned |
+| APT-001 | appointments | `appointments`, `appointment_requests` | `action: createAppointment`, `route: public booking` | appointments, `(public)/book/[clinic]` | `db: appointments.receptionist-create`, `sec: public-request-not-final` | M2 | done (public intake via service-role-only functions; anti-bot/IP limits OPEN) |
+| APT-002 | appointments | `appointment_requests`, `alternative_offers` | `rpc: review_booking_request` | requests inbox | `db: requests.state-machine` | M2 | done |
+| APT-003 | appointments | `alternative_offers` (no hold) | `rpc: accept_alternative_offer` | patient link | `race: offers.last-slot-accept` | M2 | done (race-tested) |
+| APT-004 | appointments | `doctor_scheduling_policies.method` | `action: updateSchedulingPolicy` | doctor settings | `unit: policy.schema` | M2 | done |
+| APT-005 | appointments | `doctor_weekly_schedules`, `doctor_schedule_exceptions`, `doctor_sessions` | `rpc: materialize_sessions` | schedule editor | `unit: schedule.recurrence (Africa/Cairo)` | M2 | done (Cairo time, DST-tested) |
+| APT-006 | queue | `queue_reservations`, `queue_checkins` | `rpc: confirm_queue_reservation`, `rpc: check_in` | check-in queue | `race: queue.numbers-unique` | M2 | done (race-tested numbering) |
+| APT-007 | queue | policy JSON | `modules/queue/ordering` | queue view | `unit: queue.ordering` | M2 | done for FCFS and reservation priority; hybrid blocked (OD-B04) |
+| APT-008 | queue | policy JSON | `rpc: apply_late_arrival` | queue view | `unit: late-arrival` | M2 | receptionist control only; automatic rule blocked (OD-B04) |
+| APT-009 | queue | policy JSON | `rpc: add_walk_in` | queue view | `race: queue.walk-in` | M2 | done |
+| APT-010 | queue | policy JSON | `rpc: mark_absent_when_called` | queue view | `unit: absent-policy` | M2 | done (all three policies) |
+| APT-011 | appointments | `overbooking_approvals` | `rpc: request_overbooking` | appointments | `sec: overbooking.no-bypass` | M2 | done |
+| APT-012 | appointments | `doctor_sessions.status`, events | `rpc: cancel_doctor_session` | schedule | `db: session-cancel.affected` | M2 | done (affected bookings kept for reception) |
+| APT-013 | appointments | policy JSON | `rpc: patient_cancel_or_reschedule` | patient link | `db: patient-cancel.policy` | M2 | policy stored; receptionist path only — patient self-service needs patient links (M5) |
+| APT-014 | appointments | policy JSON, `appointment_events` | `rpc: mark_no_show` | appointments | `unit: no-show` | M2 | manual only; automatic/suspected modes blocked (OD-B04) |
+| APT-015 | appointments, permissions | permission grants | — | — | `sec: receptionist.no-medical` | M2/M3 | done |
+| APT-016 | appointments | exclusion constraints / row locks, `appointment_events` | all booking RPCs | — | `race: booking.*` | M2 | done (session row lock + GiST exclusion + unique numbers; race-tested) |
 | APT-017 | — | — | — | — | — | — | blocked (OD-B04) |
 
 ## 3.4 Clinical consultations and records (MED)
@@ -141,7 +141,7 @@ Conventions used below:
 | STA-003 | tenancy | `clinic_memberships.status` | `rpc: set_membership_status` | staff | `sec: suspended-session-denied` | M0 (status enforced in RLS) / M1 (UI) | done |
 | STA-004 | tenancy | memberships per clinic | `action: switchClinic` | clinic switcher | `db: multi-clinic.isolated`, `e2e: switcher` | M0 | done |
 | STA-005 | tenancy | `clinic_role_permissions` (`staff.manage`) | `rpc: set_membership_status` | staff | `sec: manager-cannot-change-roles`, `sec: owner-not-lockable` | M1 | done |
-| STA-006 | appointments, permissions | — | — | — | see APT-015 | M2 | planned |
+| STA-006 | appointments, permissions | — | — | — | see APT-015 | M2 | done |
 | STA-007 | audit | `audit_events` (append-only) | `private.write_audit_event` | audit log (M1) | `db: audit.append-only`, `db: audit.no-client-insert` | M0 | done for M0/M1 actions; extended per domain |
 | STA-008 | — | — | — | — | — | — | excluded (attendance/shifts) |
 
@@ -177,7 +177,7 @@ Conventions used below:
 |---|---|---|---|
 | 1 | Clinic A receptionist cannot read clinic B data | `db: tenancy.cross-tenant-denied` (M0, tenancy tables) → extended per domain | M0+ |
 | 2 | Multi-clinic doctor cannot cross-read without consent | `sec: medical.cross-clinic-*` | M3 |
-| 3 | Concurrent last-slot acceptances | `race: offers.last-slot-accept` | M2 |
+| 3 | Concurrent last-slot acceptances | `tests/db/booking-race.test.ts` (last queue place, same timed slot, check-in numbering, competing offer acceptances) — done | M2 |
 | 4 | Suspended employee's old session denied | `db: tenancy.suspended-member-denied`, `db: staff.suspension-cuts-off-next-query` — done at DB level; browser e2e pending | M0/M1 |
 | 5 | Completed consultation immutable | `sec: medical.completed-immutable` | M3 |
 | 6 | Refund/reversal reconciles | `db: reversal.reconciles` | M4 |

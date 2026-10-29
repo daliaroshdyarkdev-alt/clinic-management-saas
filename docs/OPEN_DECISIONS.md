@@ -42,6 +42,8 @@ Owner column: **PO** = product owner, **Legal** = Egyptian legal counsel, **Acct
 | OD-B09 | Can a permanently deactivated employee ever rejoin the same clinic? | STA-003 | Non-blocking | No: re-invitation is refused (`membership_deactivated`). | PO |
 | OD-B10 | Clinic ownership transfer | STA-005 | Feature | Not built; the owner role cannot be assigned or removed. | PO + Legal |
 | OD-B11 | Delivery channel for staff invitations (email provider, WhatsApp) | STA-002 | Non-blocking | The invitation link is shown once to the inviter to send personally. | PO |
+| OD-B12 | Should online booking requests be on by default for new clinics? | APT-001 | Non-blocking | Off until the owner turns it on. | PO |
+| OD-B13 | Minimal patient registry delivered with Milestone 2 (needed for booking) before duplicate detection (M3) | PAT-001/002 | Non-blocking | Every registration creates its own identity; nothing is linked or merged automatically. | PO |
 | OD-B07 | Platform admin sub-roles, reviewer delegation, incident escalation | ADM-005 | Non-blocking | Single `platform_admin` role. | PO |
 
 ## Providers
@@ -62,4 +64,6 @@ Owner column: **PO** = product owner, **Legal** = Egyptian legal counsel, **Acct
 | OD-E06 | Abuse guard on clinic self-registration | At most 3 pending clinics per owner account | Engineering default; revisit with OD-B04 anti-abuse limits. |
 | OD-E07 | "Revoke active sessions" on suspension (STA-003) | Revocation is per clinic: every RLS policy and SQL function re-checks `membership.status = 'active'` on each request, so a suspended employee loses that clinic immediately while keeping access to other clinics they belong to | Global sign-out would wrongly cut access to other clinics; Supabase refresh tokens are not revoked. |
 | OD-E08 | Invitation lifetime | 7 days, single-use, bound to the invited email, which must be confirmed | |
+| OD-E09 | Abuse guard on public booking requests | At most 3 open requests per phone number per clinic | Captcha and per-IP rate limiting remain OPEN (OD-B04); add edge rate limiting before production. |
+| OD-E10 | Session generation | Sessions are materialised on demand (staff screens, public page) for up to 62 days; schedule/policy changes regenerate future sessions without bookings | Revisit with the background worker (OD-E01). |
 | OD-E05 | Hosting topology | Next.js standalone container + worker container in same region as DB | Depends on OD-L02. |
