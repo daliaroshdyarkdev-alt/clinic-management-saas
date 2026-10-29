@@ -10,7 +10,7 @@ let pool: Pool | undefined;
 
 /** Superuser pool: bypasses RLS. Use only for fixtures and assertions about raw state. */
 export function adminPool(): Pool {
-  pool ??= new Pool({ connectionString: inject("testDbUrl"), max: 4 });
+  pool ??= new Pool({ connectionString: inject("testDbUrl"), max: 16 });
   return pool;
 }
 
@@ -40,15 +40,18 @@ export async function as<T>(role: ApiRole, userId: string | null, fn: (db: PoolC
 
 export const asUser = <T>(userId: string, fn: (db: PoolClient) => Promise<T>) => as("authenticated", userId, fn);
 
-/** Runs `fn` as the user and commits (for multi-step workflows that must persist). */
-export async function asUserCommitted<T>(userId: string, fn: (db: PoolClient) => Promise<T>): Promise<T> {
+/** Runs `fn` as an API role and commits (multi-step workflows and concurrency tests). */
+export async function asCommitted<T>(
+  role: ApiRole,
+  userId: string | null,
+  fn: (db: PoolClient) => Promise<T>,
+): Promise<T> {
   const client = await adminPool().connect();
   try {
     await client.query("begin");
-    await client.query("select set_config('request.jwt.claims', $1, true)", [
-      JSON.stringify({ sub: userId, role: "authenticated" }),
-    ]);
-    await client.query("set local role authenticated");
+    const claims = userId ? { sub: userId, role } : { role };
+    await client.query("select set_config('request.jwt.claims', $1, true)", [JSON.stringify(claims)]);
+    await client.query(`set local role ${role}`);
     const result = await fn(client);
     await client.query("commit");
     return result;
@@ -59,6 +62,9 @@ export async function asUserCommitted<T>(userId: string, fn: (db: PoolClient) =>
     client.release();
   }
 }
+
+export const asUserCommitted = <T>(userId: string, fn: (db: PoolClient) => Promise<T>) =>
+  asCommitted("authenticated", userId, fn);
 
 export const asAnon = <T>(fn: (db: PoolClient) => Promise<T>) => as("anon", null, fn);
 
