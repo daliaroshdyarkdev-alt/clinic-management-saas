@@ -12,6 +12,7 @@ import { logger } from "@/lib/telemetry/logger";
 import { toDomainError, type DomainErrorCode } from "@/modules/shared/db-errors";
 import { setActiveClinicCookie } from "@/modules/tenancy/cookie";
 import { getWorkspace } from "@/modules/tenancy/workspace";
+import { withinRateLimit } from "@/modules/public-booking/service";
 import { validateLicenseFile } from "./file-validation";
 
 export type FormState = {
@@ -40,6 +41,7 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
   });
   if (!parsed.success) return { error: "invalid_input" };
   if (!passwordSchema.safeParse(parsed.data.password).success) return { error: "weak_password" };
+  if (!(await withinRateLimit("sign_up", 5, 3600))) return { error: "rate_limited" };
 
   const next = parsed.data.next ? safeNextPath(parsed.data.next, locale) : "/app/clinics/new";
   const supabase = await createSupabaseServerClient();

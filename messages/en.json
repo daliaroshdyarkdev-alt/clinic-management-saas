@@ -25,7 +25,8 @@
     "errorInvalid": "Enter a valid email and password.",
     "errorFailed": "Email or password is incorrect.",
     "noAccount": "New here?",
-    "createAccount": "Create an account"
+    "createAccount": "Create an account",
+    "errorRateLimited": "Too many sign-in attempts. Please wait 15 minutes and try again."
   },
   "shell": {
     "clinic": "Clinic",
@@ -322,7 +323,8 @@
     "subscription_restricted": "The subscription has expired. Renew it to add bookings, requests, messages or doctors; existing records stay available.",
     "doctor_capacity_reached": "Doctor capacity is full. Deactivate a doctor or add capacity at your next renewal.",
     "plan_not_available": "This plan or billing period is not available.",
-    "subscription_not_found": "No subscription exists for this clinic yet."
+    "subscription_not_found": "No subscription exists for this clinic yet.",
+    "rate_limited": "Too many attempts. Please wait a while and try again."
   },
   "weekdays": {
     "0": "Sunday",
@@ -1057,5 +1059,14 @@
     "reverificationOpen": "Waiting for an updated {type}",
     "restrictedBanner": "Subscription expired: new bookings and messages are paused. Records remain available.",
     "graceBanner": "Subscription ended — renew within the grace period to avoid restrictions."
+  },
+  "errorPage": {
+    "title": "Something went wrong",
+    "body": "The action could not be completed. No changes were saved unless you saw a confirmation. Please try again.",
+    "retry": "Try again",
+    "reference": "Reference: {digest}",
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The page does not exist or you do not have access to it.",
+    "home": "Go to the home page"
   }
 }

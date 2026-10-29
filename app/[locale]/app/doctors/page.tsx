@@ -40,7 +40,7 @@ export default async function DoctorsPage({ params }: PageProps<"/[locale]/app/d
                 {d.status === "inactive" ? ` · ${t("inactive")}` : ""}
               </p>
             </div>
-            <Link href={`/app/doctors/${d.id}`} className="text-primary underline-offset-4 hover:underline">
+            <Link href={`/app/doctors/${d.id}`} className="text-primary underline underline-offset-4">
               {t("configure")}
             </Link>
           </li>

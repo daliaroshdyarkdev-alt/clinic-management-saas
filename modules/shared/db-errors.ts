@@ -77,6 +77,7 @@ export const DOMAIN_ERROR_CODES = [
   "placement_not_allowed",
   "plan_not_available",
   "platform_managed_by_admin",
+  "rate_limited",
   "reason_required",
   "reference_required",
   "request_not_open",

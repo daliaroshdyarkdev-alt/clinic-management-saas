@@ -66,7 +66,7 @@ export default async function OnboardingPage({ params }: PageProps<"/[locale]/ap
                     href={`/api/licenses/${current.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary underline-offset-4 hover:underline"
+                    className="text-primary underline underline-offset-4"
                   >
                     {t("viewFile")}
                   </a>

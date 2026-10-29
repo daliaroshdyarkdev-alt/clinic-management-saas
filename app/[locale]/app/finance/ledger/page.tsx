@@ -50,10 +50,7 @@ export default async function LedgerPage({ params, searchParams }: PageProps<"/[
           {t("show")}
         </Button>
         {caps.includes("finance.reports") ? (
-          <a
-            href={`/api/finance/export?from=${from}&to=${to}`}
-            className="text-primary underline-offset-4 hover:underline"
-          >
+          <a href={`/api/finance/export?from=${from}&to=${to}`} className="text-primary underline underline-offset-4">
             {t("exportCsv")}
           </a>
         ) : null}

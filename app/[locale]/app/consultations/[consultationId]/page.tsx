@@ -171,7 +171,7 @@ export default async function ConsultationPage({ params }: PageProps<"/[locale]/
                       <span className="flex gap-2">
                         <Link
                           href={`/app/consultations/${consultation.id}/external/${g.grant_id}`}
-                          className="text-primary underline-offset-4 hover:underline"
+                          className="text-primary underline underline-offset-4"
                         >
                           {t("viewExternal")}
                         </Link>
@@ -205,10 +205,7 @@ export default async function ConsultationPage({ params }: PageProps<"/[locale]/
                 .filter((h) => h.id !== consultation.id)
                 .map((h) => (
                   <li key={h.id}>
-                    <Link
-                      href={`/app/consultations/${h.id}`}
-                      className="text-primary underline-offset-4 hover:underline"
-                    >
+                    <Link href={`/app/consultations/${h.id}`} className="text-primary underline underline-offset-4">
                       {date(h.started_at)}
                     </Link>{" "}
                     · {t(`status.${h.status}`)}

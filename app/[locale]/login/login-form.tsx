@@ -26,7 +26,11 @@ export function LoginForm({ next }: { next?: string }) {
       </div>
       {state.error ? (
         <p role="alert" className="text-sm text-destructive">
-          {state.error === "invalid" ? t("errorInvalid") : t("errorFailed")}
+          {state.error === "invalid"
+            ? t("errorInvalid")
+            : state.error === "rate_limited"
+              ? t("errorRateLimited")
+              : t("errorFailed")}
         </p>
       ) : null}
       <Button type="submit" disabled={pending}>

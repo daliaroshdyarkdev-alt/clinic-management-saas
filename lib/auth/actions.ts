@@ -6,6 +6,7 @@ import { z } from "zod";
 import { routing } from "@/i18n/routing";
 import { logger } from "@/lib/telemetry/logger";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { withinRateLimit } from "@/modules/public-booking/service";
 import { ACTIVE_CLINIC_COOKIE } from "@/modules/tenancy/active-clinic";
 import { safeNextPath } from "./safe-next-path";
 
@@ -16,7 +17,7 @@ const signInSchema = z.object({
   next: z.string().max(500).optional(),
 });
 
-export type SignInState = { error: "invalid" | "failed" | null };
+export type SignInState = { error: "invalid" | "failed" | "rate_limited" | null };
 
 export async function signIn(_prev: SignInState, formData: FormData): Promise<SignInState> {
   const parsed = signInSchema.safeParse({
@@ -26,6 +27,8 @@ export async function signIn(_prev: SignInState, formData: FormData): Promise<Si
     next: formData.get("next") ?? undefined,
   });
   if (!parsed.success) return { error: "invalid" };
+  // Per-address brake in addition to Supabase Auth's own limits.
+  if (!(await withinRateLimit("sign_in", 10, 900))) return { error: "rate_limited" };
 
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithPassword({

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { connection } from "next/server";
 import { enterRouteLocale } from "@/i18n/locale";
 import { directionOf, routing } from "@/i18n/routing";
 import "../globals.css";
@@ -25,6 +26,8 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
 }
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
+  // Every page renders per request so Next.js can apply the CSP nonce.
+  await connection();
   const locale = enterRouteLocale((await params).locale);
 
   return (

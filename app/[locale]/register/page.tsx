@@ -32,7 +32,7 @@ export default async function RegisterPage({ params, searchParams }: PageProps<"
               {t("haveAccount")}{" "}
               <Link
                 href={nextPath ? { pathname: "/login", query: { next: nextPath } } : "/login"}
-                className="text-primary underline-offset-4 hover:underline"
+                className="text-primary underline underline-offset-4"
               >
                 {t("signIn")}
               </Link>
