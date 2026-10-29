@@ -13,6 +13,7 @@ export async function DayBoard({
   isToday,
   viewerIsOwner,
   viewerDoctorId,
+  canMessage = false,
 }: {
   clinicId: string;
   date: string;
@@ -21,6 +22,8 @@ export async function DayBoard({
   isToday: boolean;
   viewerIsOwner: boolean;
   viewerDoctorId: string | null;
+  /** Viewer holds messaging.send (WAP-007); the SQL function re-checks. */
+  canMessage?: boolean;
 }) {
   const t = await getTranslations("board");
   const [doctors, sessions] = await Promise.all([
@@ -53,6 +56,7 @@ export async function DayBoard({
           canDecideOverbooking={viewerIsOwner || viewerDoctorId === session.clinic_doctor_id}
           consultations={consultations}
           doctors={activeDoctors}
+          canMessage={canMessage}
         />
       ))}
     </div>

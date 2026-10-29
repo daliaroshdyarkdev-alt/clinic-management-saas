@@ -832,7 +832,7 @@ $$;
 create function public.worker_claim_messages(p_limit integer)
 returns table (
   intent_id uuid, clinic_id uuid, phone_number_id text, credential_ref text, recipient_phone_e164 text,
-  provider_template text, language public.app_locale, variables jsonb, attempts integer
+  template_key text, provider_template text, language public.app_locale, variables jsonb, offer_id uuid, attempts integer
 )
 language plpgsql
 security definer
@@ -897,9 +897,11 @@ begin
     phone_number_id := v_conn.phone_number_id;
     credential_ref := v_conn.credential_ref;
     recipient_phone_e164 := v.recipient_phone_e164;
+    template_key := v.template_key;
     provider_template := v_template;
     language := v.language;
     variables := v.variables;
+    offer_id := v.offer_id;
     attempts := v.attempts + 1;
     return next;
   end loop;

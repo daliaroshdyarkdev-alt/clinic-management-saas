@@ -49,7 +49,13 @@ export const NAV_ITEMS: readonly NavItem[] = [
     capability: ["finance.collect", "finance.approve", "finance.reports", "finance.accounts"],
     milestone: null,
   },
-  { key: "whatsapp", href: "/app/whatsapp", roles: ["owner"], milestone: 5 },
+  {
+    key: "whatsapp",
+    href: "/app/whatsapp",
+    roles: ["owner"],
+    capability: ["appointments.manage", "messaging.send", "messaging.budget"],
+    milestone: null,
+  },
   { key: "subscription", href: "/app/subscription", roles: ["owner"], milestone: 6 },
 ];
 

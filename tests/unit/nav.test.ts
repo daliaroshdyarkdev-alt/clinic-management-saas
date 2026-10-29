@@ -11,6 +11,7 @@ describe("role-aware navigation", () => {
       "appointments",
       "requests",
       "patients",
+      "whatsapp",
     ]);
   });
 
@@ -41,7 +42,12 @@ describe("role-aware navigation", () => {
     expect(keys("owner", ["staff.manage", "appointments.manage"])).not.toContain("myQueue");
   });
 
-  it("WhatsApp and subscription are still marked with their milestones", () => {
-    expect(NAV_ITEMS.filter((i) => i.milestone !== null).map((i) => i.key)).toEqual(["whatsapp", "subscription"]);
+  it("a manager sees WhatsApp only with an appointments or messaging grant", () => {
+    expect(keys("manager", ["messaging.budget"])).toContain("whatsapp");
+    expect(keys("manager", ["finance.reports"])).not.toContain("whatsapp");
+  });
+
+  it("subscription is still marked with its milestone", () => {
+    expect(NAV_ITEMS.filter((i) => i.milestone !== null).map((i) => i.key)).toEqual(["subscription"]);
   });
 });

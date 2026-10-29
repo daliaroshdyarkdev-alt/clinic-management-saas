@@ -222,7 +222,8 @@
       "suspended": "إيقاف",
       "closed": "إغلاق (نهائي)"
     },
-    "history": "السجل"
+    "history": "السجل",
+    "messagingLink": "واتساب"
   },
   "errors": {
     "forbidden": "ليست لديك صلاحية للقيام بذلك.",
@@ -315,7 +316,8 @@
     "reference_required": "أدخل مرجع العملية.",
     "request_pending": "يوجد طلب بانتظار الموافقة بالفعل.",
     "session_already_open": "توجد وردية مفتوحة لك أو لهذا الدرج بالفعل.",
-    "sessions_not_closed": "يجب إغلاق كل ورديات اليوم أولًا."
+    "sessions_not_closed": "يجب إغلاق كل ورديات اليوم أولًا.",
+    "platform_managed_by_admin": "الأرقام التي تديرها المنصة يضبطها فريق المنصة."
   },
   "weekdays": {
     "0": "الأحد",
@@ -479,7 +481,8 @@
     "startConsultation": "بدء الكشف",
     "continueConsultation": "متابعة الكشف",
     "viewConsultation": "عرض الكشف",
-    "reassign": "تحويل لطبيب آخر"
+    "reassign": "تحويل لطبيب آخر",
+    "sendReminder": "إرسال تذكير واتساب"
   },
   "patients": {
     "noAccess": "ليست لديك صلاحية الوصول إلى سجل المرضى.",
@@ -511,7 +514,14 @@
       "identification": "نفس رقم الهوية"
     },
     "notDuplicate": "أشخاص مختلفون",
-    "confirmDuplicate": "نفس الشخص"
+    "confirmDuplicate": "نفس الشخص",
+    "whatsappConsent": {
+      "granted": "واتساب: موافق",
+      "withdrawn": "واتساب: سُحبت الموافقة",
+      "unknown": "واتساب: لم يُسأل"
+    },
+    "recordConsent": "تسجيل الموافقة",
+    "withdrawConsent": "سحب الموافقة"
   },
   "requests": {
     "noAccess": "ليست لديك صلاحية الوصول إلى طلبات الحجز.",
@@ -812,5 +822,136 @@
     "date": "التاريخ",
     "patient": "المريض",
     "notTaxDocument": "إيصال داخلي. ليس فاتورة ضريبية أو إيصالًا إلكترونيًا رسميًا."
+  },
+  "whatsapp": {
+    "title": "رسائل واتساب",
+    "intro": "رسائل المواعيد فقط، وتُرسل للمرضى الموافقين. لا تحتوي الرسائل على أي معلومات طبية.",
+    "noAccess": "ليست لديك صلاحية رسائل واتساب في هذه العيادة.",
+    "alertsTitle": "يحتاج إلى متابعة",
+    "alerts": {
+      "budget_80": "تم استخدام ٨٠٪ من الحد الأقصى لإنفاق الرسائل",
+      "budget_100": "تم الوصول إلى ميزانية الرسائل؛ توقفت الرسائل الإضافية",
+      "budget_blocked": "لم تُرسل رسالة لنفاد الميزانية",
+      "send_failed": "تعذر إرسال رسالة",
+      "config_blocked": "تم حجب رسالة: القالب غير معتمد",
+      "connection_down": "اتصال واتساب متوقف؛ الرسائل في الانتظار",
+      "connection_restored": "تمت استعادة اتصال واتساب",
+      "patient_reply": "رد مريض على واتساب؛ يرجى المتابعة"
+    },
+    "acknowledge": "تمت المعالجة",
+    "connectionTitle": "الاتصال",
+    "connectionDescription": "رقم واتساب للأعمال الخاص بالعيادة. يُحفظ رمز الوصول لدى فريق التشغيل في مخزن الأسرار باسم المرجع، ولا يُدخل هنا أبدًا.",
+    "ownership": {
+      "clinic_owned": "رقم مملوك للعيادة",
+      "platform_managed": "رقم تديره المنصة"
+    },
+    "connectionStatus": {
+      "connected": "متصل",
+      "disconnected": "لم يتم التحقق بعد",
+      "error": "خطأ في الاتصال"
+    },
+    "noConnection": "لم يُضبط رقم واتساب. لن تُرسل أي رسائل.",
+    "phoneNumberId": "معرّف رقم الهاتف (من Meta)",
+    "displayPhone": "الرقم الظاهر",
+    "credentialRef": "مرجع بيانات الاعتماد",
+    "credentialHint": "اطلب من فريق التشغيل حفظ رمز الوصول باسم WHATSAPP_TOKEN__<المرجع>.",
+    "saveConnection": "حفظ الاتصال",
+    "saved": "تم الحفظ.",
+    "settingsTitle": "الإشعارات",
+    "settingsDescription": "اختر الأحداث التي تُرسل رسائل. لا يُرسل شيء حتى تفعّله.",
+    "events": "أرسل رسالة عند",
+    "eventNames": {
+      "request_received": "استلام طلب حجز إلكتروني",
+      "request_decision": "قبول الطلب أو رفضه",
+      "alternative_proposal": "اقتراح موعد بديل",
+      "reminder": "اقتراب الموعد (تذكير)",
+      "cancellation": "إلغاء موعد",
+      "session_cancellation": "إلغاء الطبيب لجلسة",
+      "no_show": "عدم حضور المريض"
+    },
+    "reminderOffsets": "أوقات التذكير (بالدقائق قبل الموعد، مفصولة بفواصل، ١٥–١٠٠٨٠)",
+    "defaultLanguage": "لغة الرسائل الافتراضية",
+    "saveSettings": "حفظ",
+    "budgetTitle": "الميزانية",
+    "budgetDescription": "تُرسل الرسائل التي تتجاوز الحصة المشمولة فقط ضمن الحد الأقصى للإنفاق.",
+    "budgetUsage": "هذا الشهر: استُخدمت {used} من {allowance} رسالة مشمولة",
+    "budgetNone": "لم تُرسل رسائل هذا الشهر.",
+    "overageSpent": "إنفاق إضافي {amount}",
+    "noCeiling": "لا يوجد حد إنفاق: لن يُرسل شيء بعد الحصة.",
+    "ceiling": "حد الإنفاق: {amount} شهريًا",
+    "ceilingLabel": "الحد الشهري (جنيه)",
+    "saveCeiling": "حفظ الحد",
+    "permissionsTitle": "الصلاحيات",
+    "permissionsDescription": "الإرسال اليدوي والتحكم في الميزانية معطلان حتى تمنحهما.",
+    "grants": {
+      "receptionist:messaging": {
+        "send": "يمكن لموظفي الاستقبال الإرسال يدويًا"
+      },
+      "manager:messaging": {
+        "send": "يمكن للمديرين الإرسال يدويًا",
+        "budget": "يمكن للمديرين تعديل حد الإنفاق"
+      }
+    },
+    "grant": "منح",
+    "revoke": "سحب",
+    "templatesTitle": "القوالب",
+    "templatesDescription": "تُرسل فقط القوالب المعتمدة من المنصة ومن Meta.",
+    "templateNames": {
+      "request_received": "استلام الطلب",
+      "request_approved": "قبول الطلب",
+      "request_rejected": "رفض الطلب",
+      "alternative_proposal": "اقتراح بديل",
+      "reminder": "تذكير",
+      "cancellation": "إلغاء",
+      "session_cancellation": "إلغاء الجلسة",
+      "no_show": "عدم الحضور"
+    },
+    "approved": "معتمد",
+    "notApproved": "غير معتمد",
+    "overrideStatus": {
+      "pending": "صياغتك بانتظار الاعتماد",
+      "approved": "صياغتك معتمدة ومستخدمة",
+      "rejected": "لم تُعتمد صياغتك"
+    },
+    "customise": "طلب صياغة خاصة بالعيادة",
+    "providerTemplateName": "اسم القالب في Meta",
+    "requestApproval": "إرسال للاعتماد",
+    "overrideRequested": "أُرسل للاعتماد.",
+    "logTitle": "سجل الرسائل",
+    "logDescription": "آخر ٥٠ رسالة.",
+    "logEmpty": "لا توجد رسائل بعد.",
+    "when": "الوقت",
+    "template": "الرسالة",
+    "recipient": "المستلم",
+    "status": "الحالة",
+    "manual": "يدوي",
+    "overage": "إضافي",
+    "statuses": {
+      "queued": "في الانتظار",
+      "sending": "جارٍ الإرسال",
+      "sent": "أُرسلت",
+      "delivered": "وصلت",
+      "read": "قُرئت",
+      "failed": "فشلت",
+      "cancelled": "أُلغيت",
+      "obsolete": "لم تعد لازمة",
+      "blocked_consent": "محجوبة: لا توجد موافقة",
+      "blocked_budget": "محجوبة: الميزانية",
+      "blocked_config": "محجوبة: القالب غير معتمد"
+    },
+    "adminTitle": "إعدادات واتساب للمنصة",
+    "termsTitle": "شروط الرسائل",
+    "termsDescription": "الحصة الشهرية الافتراضية وسعر الرسالة الإضافية إلى أن تحددها خطط الاشتراك (قرار مفتوح OD-B05).",
+    "allowance": "الرسائل المشمولة شهريًا",
+    "overageUnit": "سعر الرسالة الإضافية (جنيه، فارغ = لا إضافي)",
+    "adminTemplatesDescription": "اعتمد القالب فقط بعد اعتماده من Meta.",
+    "markApproved": "اعتماد",
+    "markNotApproved": "سحب الاعتماد",
+    "reject": "رفض",
+    "pendingOverrides": "طلبات صياغة العيادات",
+    "none": "لا يوجد.",
+    "platformNumberTitle": "رقم تديره المنصة",
+    "platformNumberDescription": "تخصيص رقم واتساب مملوك للمنصة لعيادة.",
+    "clinicId": "معرّف العيادة"
   }
 }

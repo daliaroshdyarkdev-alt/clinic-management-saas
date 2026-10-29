@@ -17,9 +17,14 @@ export default async function AdminLayout({ children, params }: LayoutProps<"/[l
     <div className="flex min-h-dvh flex-col">
       <DevNotice />
       <header className="flex items-center justify-between gap-3 border-b px-4 py-2 sm:px-6">
-        <Link href="/admin" className="font-semibold">
-          {t("title")}
-        </Link>
+        <nav className="flex items-center gap-4">
+          <Link href="/admin" className="font-semibold">
+            {t("title")}
+          </Link>
+          <Link href="/admin/messaging" className="text-sm">
+            {t("messagingLink")}
+          </Link>
+        </nav>
         <div className="flex items-center gap-2">
           <LocaleSwitcher />
           <form action={signOut}>

@@ -48,6 +48,9 @@ Owner column: **PO** = product owner, **Legal** = Egyptian legal counsel, **Acct
 | OD-B15 | Matching rule for a patient's records in other clinics (after consent) | PAT-004, MED-006 | Production | Same mobile and birth date, plus same ID when both records have one; the treated patient must match too. | PO + Legal |
 | OD-B16 | Default finance approval rules before the owner saves any | FIN-005..008, FIN-012 | Non-blocking | Most restrictive: every expense/transfer/refund needs approval, discrepancies need approval, daily close needs approval. | PO |
 | OD-B17 | Should discrepancies post an adjusting entry to the ledger? | FIN-005 | Feature | No: counts and differences are recorded on the session only (needs accountant input). | Acct |
+| OD-B18 | Manual WhatsApp sending and budget control | WAP-013/014 | Non-blocking | Off for everyone except the owner until the owner grants `messaging.send` / `messaging.budget`. | PO |
+| OD-B19 | Reschedule notices | WAP-002 | Non-blocking | Not emitted (Phase 1 has no reschedule action; a cancel + new booking sends a cancellation). The event switch exists for later. | PO |
+| OD-B20 | Messaging allowance and overage price before plans exist | WAP-013, OD-B05 | Production | Platform settings default to 0 included messages and no overage price, so nothing billable is sent until set. | PO + Acct |
 | OD-B07 | Platform admin sub-roles, reviewer delegation, incident escalation | ADM-005 | Non-blocking | Single `platform_admin` role. | PO |
 
 ## Providers
@@ -70,4 +73,6 @@ Owner column: **PO** = product owner, **Legal** = Egyptian legal counsel, **Acct
 | OD-E08 | Invitation lifetime | 7 days, single-use, bound to the invited email, which must be confirmed | |
 | OD-E09 | Abuse guard on public booking requests | At most 3 open requests per phone number per clinic | Captcha and per-IP rate limiting remain OPEN (OD-B04); add edge rate limiting before production. |
 | OD-E10 | Session generation | Sessions are materialised on demand (staff screens, public page) for up to 62 days; schedule/policy changes regenerate future sessions without bookings | Revisit with the background worker (OD-E01). |
+| OD-E11 | Messaging worker | Plain Node worker (`pnpm worker`) over service-role RPCs with a Postgres outbox (`FOR UPDATE SKIP LOCKED`, leases, idempotency keys) instead of pg-boss | Fewer moving parts; revisit OD-E01 if job volume grows. Access tokens live only in the worker environment (`WHATSAPP_TOKEN__<REF>`). |
+| OD-E12 | Offer link token in message variables | The patient's offer token is stored in the outbox row so the worker can build the link; the column is not readable by any client role | Rotate by re-proposing; tokens expire with the offer. |
 | OD-E05 | Hosting topology | Next.js standalone container + worker container in same region as DB | Depends on OD-L02. |

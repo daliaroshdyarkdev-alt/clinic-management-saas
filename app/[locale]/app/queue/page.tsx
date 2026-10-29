@@ -23,6 +23,7 @@ export default async function QueuePage({ params }: PageProps<"/[locale]/app/que
         isToday
         viewerIsOwner={clinic.role === "owner"}
         viewerDoctorId={workspace.doctorId}
+        canMessage={workspace.capabilities.includes("messaging.send")}
       />
     </div>
   );

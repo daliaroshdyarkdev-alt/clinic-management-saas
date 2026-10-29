@@ -114,22 +114,22 @@ Conventions used below:
 
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
-| WAP-001 | messaging | `whatsapp_connections` | `MessagingProvider` adapter | WhatsApp settings | `unit: provider.mock` | M5 | blocked for real provider (OD-P01); mock proceeds |
-| WAP-002 | messaging | `clinic_notification_settings` | `action: updateNotificationSettings` | WhatsApp settings | `db: settings.owner-or-granted` | M5 | planned |
-| WAP-003 | messaging | reminder rules | worker `schedule-reminders` | WhatsApp settings | `unit: reminder-times (Cairo)` | M5 | planned |
-| WAP-004 | messaging | `whatsapp_template_catalog`, `clinic_message_templates` | `action: customizeTemplate` | templates | `db: templates.approved-only` | M5 | planned |
-| WAP-005 | messaging | `clinic_patients.preferred_language` | — | — | `unit: language-fallback` | M5 | planned |
-| WAP-006 | messaging, appointments | `message_webhooks` | `route: /api/webhooks/whatsapp` | — | `race: webhook.replay-no-duplicate-action` | M5 | planned |
-| WAP-007 | messaging | `message_intents` | `action: sendTemplateManually` | appointment detail | `db: manual-send.permission` | M5 | planned |
-| WAP-008 | messaging | `messaging_consents` | `action: recordConsent` | patient detail | `db: consent.separate-from-medical` | M5 | planned |
-| WAP-009 | messaging | `messaging_consents.revoked_at` | `action: recordWithdrawal` | patient detail | `race: withdrawal-before-dispatch` | M5 | planned |
-| WAP-010 | messaging | `message_attempts`, dead-letter | worker | alerts | `unit: retry-classification` | M5 | planned |
-| WAP-011 | messaging | connection health | worker `connection-monitor` | alerts | `db: resume-only-relevant` | M5 | planned |
-| WAP-012 | messaging | `message_intents`, `message_attempts` | `action: searchMessageLog` | message log | `db: log.clinic-scoped` | M5 | planned |
-| WAP-013 | messaging, billing | `messaging_usage_ledger`, `messaging_budgets` | `rpc: reserve_message_budget` | WhatsApp budget | `race: budget.cap-under-concurrency`, `db: threshold-alert-once` | M5 | blocked (prices, OD-B05) — mechanism proceeds |
-| WAP-014 | permissions | permission grants | — | permissions page | `sec: whatsapp.non-granted-denied` | M5 | planned |
+| WAP-001 | messaging | `whatsapp_connections` | `MessagingProvider` adapter | WhatsApp settings | `unit: provider.mock` | M5 | done (mock + Meta Cloud adapter; production blocked OD-P01) |
+| WAP-002 | messaging | `clinic_notification_settings` | `action: updateNotificationSettings` | WhatsApp settings | `db: settings.owner-or-granted` | M5 | done |
+| WAP-003 | messaging | reminder rules | worker `schedule-reminders` | WhatsApp settings | `unit: reminder-times (Cairo)` | M5 | done |
+| WAP-004 | messaging | `whatsapp_template_catalog`, `clinic_message_templates` | `action: customizeTemplate` | templates | `db: templates.approved-only` | M5 | done |
+| WAP-005 | messaging | `clinic_patients.preferred_language` | — | — | `unit: language-fallback` | M5 | done |
+| WAP-006 | messaging, appointments | `message_webhooks` | `route: /api/webhooks/whatsapp` | — | `race: webhook.replay-no-duplicate-action` | M5 | done |
+| WAP-007 | messaging | `message_intents` | `action: sendTemplateManually` | appointment detail | `db: manual-send.permission` | M5 | done |
+| WAP-008 | messaging | `messaging_consents` | `action: recordConsent` | patient detail | `db: consent.separate-from-medical` | M5 | done |
+| WAP-009 | messaging | `messaging_consents.revoked_at` | `action: recordWithdrawal` | patient detail | `race: withdrawal-before-dispatch` | M5 | done |
+| WAP-010 | messaging | `message_attempts`, dead-letter | worker | alerts | `unit: retry-classification` | M5 | done |
+| WAP-011 | messaging | connection health | worker `connection-monitor` | alerts | `db: resume-only-relevant` | M5 | done |
+| WAP-012 | messaging | `message_intents`, `message_attempts` | `action: searchMessageLog` | message log | `db: log.clinic-scoped` | M5 | done |
+| WAP-013 | messaging, billing | `messaging_usage_ledger`, `messaging_budgets` | `rpc: reserve_message_budget` | WhatsApp budget | `race: budget.cap-under-concurrency`, `db: threshold-alert-once` | M5 | done (mechanism; prices OD-B05) |
+| WAP-014 | permissions | permission grants | — | permissions page | `sec: whatsapp.non-granted-denied` | M5 | done |
 | WAP-015 | — | — | — | — | — | — | excluded |
-| WAP-016 | messaging | outbox, idempotency keys | webhook signature verify | — | `unit: hmac`, `race: webhook.replay` | M5 | planned |
+| WAP-016 | messaging | outbox, idempotency keys | webhook signature verify | — | `unit: hmac`, `race: webhook.replay` | M5 | done |
 | WAP-017 | — | — | — | — | — | — | blocked (OD-P01, OD-B05) |
 
 ## 3.7 Staff and audit (STA)

@@ -14,6 +14,7 @@ import {
 } from "@/modules/appointments/actions";
 import type { AppointmentRow } from "@/modules/appointments/queries";
 import { openConsultation, reassignConsultation } from "@/modules/clinical/actions";
+import { sendManualMessage } from "@/modules/messaging/actions";
 import { cancelSession } from "@/modules/scheduling/actions";
 import type { DoctorSession } from "@/modules/scheduling/queries";
 
@@ -34,6 +35,7 @@ export async function SessionBoard({
   canDecideOverbooking,
   consultations,
   doctors,
+  canMessage = false,
 }: {
   session: DoctorSession;
   doctorName: string;
@@ -47,6 +49,7 @@ export async function SessionBoard({
   consultations: Map<string, { consultationId: string; status: "draft" | "completed" }>;
   /** Active doctors of the clinic, for reassigning an open consultation. */
   doctors: { id: string; name: string }[];
+  canMessage?: boolean;
 }) {
   const t = await getTranslations("board");
   const format = await getFormatter();
@@ -196,6 +199,15 @@ export async function SessionBoard({
                           ) : null}
                         </div>
                       </ActionForm>
+                      {canMessage && ["booked", "checked_in"].includes(a.status) ? (
+                        <ActionForm action={sendManualMessage} className="mt-2">
+                          <input type="hidden" name="appointmentId" value={a.id} />
+                          <input type="hidden" name="template" value="reminder" />
+                          <SubmitButton size="sm" variant="outline">
+                            {t("sendReminder")}
+                          </SubmitButton>
+                        </ActionForm>
+                      ) : null}
                     </details>
                   ) : null}
                 </div>

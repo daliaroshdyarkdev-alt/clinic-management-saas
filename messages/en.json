@@ -222,7 +222,8 @@
       "suspended": "Suspend",
       "closed": "Close (final)"
     },
-    "history": "History"
+    "history": "History",
+    "messagingLink": "WhatsApp"
   },
   "errors": {
     "forbidden": "You don't have permission to do this.",
@@ -315,7 +316,8 @@
     "reference_required": "Enter the transaction reference.",
     "request_pending": "A request is already waiting for this.",
     "session_already_open": "A session is already open for you or this drawer.",
-    "sessions_not_closed": "All cashier sessions of the day must be closed first."
+    "sessions_not_closed": "All cashier sessions of the day must be closed first.",
+    "platform_managed_by_admin": "Platform-managed numbers are set up by the platform team."
   },
   "weekdays": {
     "0": "Sunday",
@@ -479,7 +481,8 @@
     "startConsultation": "Start consultation",
     "continueConsultation": "Continue consultation",
     "viewConsultation": "View consultation",
-    "reassign": "Hand over"
+    "reassign": "Hand over",
+    "sendReminder": "Send WhatsApp reminder"
   },
   "patients": {
     "noAccess": "You don't have access to the patient registry.",
@@ -511,7 +514,14 @@
       "identification": "same ID"
     },
     "notDuplicate": "Different people",
-    "confirmDuplicate": "Same person"
+    "confirmDuplicate": "Same person",
+    "whatsappConsent": {
+      "granted": "WhatsApp: consented",
+      "withdrawn": "WhatsApp: consent withdrawn",
+      "unknown": "WhatsApp: not asked"
+    },
+    "recordConsent": "Record consent",
+    "withdrawConsent": "Withdraw consent"
   },
   "requests": {
     "noAccess": "You don't have access to booking requests.",
@@ -812,5 +822,136 @@
     "date": "Date",
     "patient": "Patient",
     "notTaxDocument": "Internal receipt. Not an official tax invoice or e-receipt."
+  },
+  "whatsapp": {
+    "title": "WhatsApp messages",
+    "intro": "Transactional appointment messages only, sent to patients who consented. Messages never include medical information.",
+    "noAccess": "You don't have access to WhatsApp messaging in this clinic.",
+    "alertsTitle": "Needs attention",
+    "alerts": {
+      "budget_80": "80% of the messaging spending ceiling used",
+      "budget_100": "Messaging budget reached; further messages are paused",
+      "budget_blocked": "A message was not sent because the budget is exhausted",
+      "send_failed": "A message could not be delivered",
+      "config_blocked": "A message was blocked: template not approved",
+      "connection_down": "WhatsApp connection is down; messages are waiting",
+      "connection_restored": "WhatsApp connection restored",
+      "patient_reply": "A patient replied on WhatsApp; please follow up"
+    },
+    "acknowledge": "Mark as handled",
+    "connectionTitle": "Connection",
+    "connectionDescription": "Your clinic's WhatsApp Business number. The access token is stored by operations in the secret store under the reference name; it is never entered here.",
+    "ownership": {
+      "clinic_owned": "Clinic-owned number",
+      "platform_managed": "Platform-managed number"
+    },
+    "connectionStatus": {
+      "connected": "Connected",
+      "disconnected": "Not verified yet",
+      "error": "Connection error"
+    },
+    "noConnection": "No WhatsApp number configured. Nothing will be sent.",
+    "phoneNumberId": "Phone number ID (from Meta)",
+    "displayPhone": "Display number",
+    "credentialRef": "Credential reference",
+    "credentialHint": "Ask operations to store the access token as WHATSAPP_TOKEN__<reference>.",
+    "saveConnection": "Save connection",
+    "saved": "Saved.",
+    "settingsTitle": "Notifications",
+    "settingsDescription": "Choose which events send messages. Nothing is sent until you enable it.",
+    "events": "Send a message when",
+    "eventNames": {
+      "request_received": "an online request is received",
+      "request_decision": "a request is approved or rejected",
+      "alternative_proposal": "an alternative time is proposed",
+      "reminder": "an appointment is coming up (reminder)",
+      "cancellation": "an appointment is cancelled",
+      "session_cancellation": "a doctor cancels a session",
+      "no_show": "a patient misses an appointment"
+    },
+    "reminderOffsets": "Reminder times (minutes before, comma-separated, 15–10080)",
+    "defaultLanguage": "Default message language",
+    "saveSettings": "Save",
+    "budgetTitle": "Budget",
+    "budgetDescription": "Messages beyond the included allowance are sent only within your spending ceiling.",
+    "budgetUsage": "This month: {used} of {allowance} included messages used",
+    "budgetNone": "No messages sent this month.",
+    "overageSpent": "extra spend {amount}",
+    "noCeiling": "No spending ceiling: nothing beyond the allowance will be sent.",
+    "ceiling": "Spending ceiling: {amount} per month",
+    "ceilingLabel": "Monthly ceiling (EGP)",
+    "saveCeiling": "Save ceiling",
+    "permissionsTitle": "Permissions",
+    "permissionsDescription": "Manual sending and budget control are off until you grant them.",
+    "grants": {
+      "receptionist:messaging": {
+        "send": "Receptionists can send messages manually"
+      },
+      "manager:messaging": {
+        "send": "Managers can send messages manually",
+        "budget": "Managers can change the spending ceiling"
+      }
+    },
+    "grant": "Grant",
+    "revoke": "Revoke",
+    "templatesTitle": "Templates",
+    "templatesDescription": "Only templates approved by the platform (and by Meta) are sent.",
+    "templateNames": {
+      "request_received": "Request received",
+      "request_approved": "Request approved",
+      "request_rejected": "Request rejected",
+      "alternative_proposal": "Alternative proposal",
+      "reminder": "Reminder",
+      "cancellation": "Cancellation",
+      "session_cancellation": "Session cancelled",
+      "no_show": "Missed appointment"
+    },
+    "approved": "Approved",
+    "notApproved": "Not approved",
+    "overrideStatus": {
+      "pending": "Your wording is awaiting approval",
+      "approved": "Your wording is approved and in use",
+      "rejected": "Your wording was not approved"
+    },
+    "customise": "Request clinic-specific wording",
+    "providerTemplateName": "Meta template name",
+    "requestApproval": "Submit for approval",
+    "overrideRequested": "Submitted for approval.",
+    "logTitle": "Message log",
+    "logDescription": "Latest 50 messages.",
+    "logEmpty": "No messages yet.",
+    "when": "When",
+    "template": "Message",
+    "recipient": "Recipient",
+    "status": "Status",
+    "manual": "manual",
+    "overage": "extra",
+    "statuses": {
+      "queued": "Queued",
+      "sending": "Sending",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "read": "Read",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "obsolete": "No longer relevant",
+      "blocked_consent": "Blocked: no consent",
+      "blocked_budget": "Blocked: budget",
+      "blocked_config": "Blocked: template not approved"
+    },
+    "adminTitle": "WhatsApp platform settings",
+    "termsTitle": "Messaging terms",
+    "termsDescription": "Default monthly allowance and overage price per message until subscription plans define them (open decision OD-B05).",
+    "allowance": "Included messages per month",
+    "overageUnit": "Overage price per message (EGP, empty = no overage)",
+    "adminTemplatesDescription": "Mark a template approved only after Meta has approved it.",
+    "markApproved": "Approve",
+    "markNotApproved": "Withdraw approval",
+    "reject": "Reject",
+    "pendingOverrides": "Clinic wording requests",
+    "none": "None.",
+    "platformNumberTitle": "Platform-managed number",
+    "platformNumberDescription": "Assign a platform-owned WhatsApp number to a clinic.",
+    "clinicId": "Clinic ID"
   }
 }

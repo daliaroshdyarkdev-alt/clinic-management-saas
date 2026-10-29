@@ -6,7 +6,7 @@ import { getCurrentUser, type CurrentUser } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   ACTIVE_CLINIC_COOKIE,
-  FINANCE_CAPABILITIES,
+  ALL_CAPABILITIES,
   resolveActiveClinic,
   type ClinicCapability,
   type WorkspaceClinic,
@@ -22,9 +22,12 @@ const membershipRowSchema = z.object({
 });
 
 const permissionRowSchema = z.object({
-  capability: z.enum(["staff.manage", "appointments.manage"]),
+  capability: z.string(),
   allowed: z.boolean(),
 });
+
+const isCapability = (value: string): value is ClinicCapability =>
+  (ALL_CAPABILITIES as readonly string[]).includes(value);
 
 export type Workspace = {
   user: CurrentUser;
@@ -72,7 +75,7 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
 
   let capabilities: ClinicCapability[] = [];
   if (active?.role === "owner") {
-    capabilities = ["staff.manage", "appointments.manage", ...FINANCE_CAPABILITIES];
+    capabilities = [...ALL_CAPABILITIES];
   } else if (active) {
     const { data, error } = await supabase
       .from("clinic_role_permissions")
@@ -84,7 +87,9 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
       .array(permissionRowSchema)
       .parse(data)
       .filter((p) => p.allowed)
-      .map((p) => p.capability);
+      .map((p) => p.capability)
+      // Capabilities added by later migrations are ignored, never fatal.
+      .filter(isCapability);
     // Implicit role capabilities, mirroring the SQL helpers.
     const implicit: ClinicCapability[] =
       active.role === "receptionist" ? ["appointments.manage"] : active.role === "cashier" ? ["finance.collect"] : [];

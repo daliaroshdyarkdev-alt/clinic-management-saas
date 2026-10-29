@@ -74,6 +74,7 @@ export const DOMAIN_ERROR_CODES = [
   "patient_not_found",
   "payment_not_found",
   "placement_not_allowed",
+  "platform_managed_by_admin",
   "reason_required",
   "reference_required",
   "request_not_open",

@@ -2,7 +2,7 @@
 
 Multi-tenant clinic management web app (Arabic-first, English-capable): appointments and queues, patient records with visit-level medical privacy, operational finance, WhatsApp appointment messaging, staff roles, SaaS billing and platform administration.
 
-> **Status: Milestone 2 (scheduling, appointments, queues, online requests) — awaiting authenticated end-to-end verification.** Development build with synthetic data only. Not approved for real patient data: see the legal and hosting blockers in [`docs/OPEN_DECISIONS.md`](docs/OPEN_DECISIONS.md).
+> **Status: Milestone 5 (WhatsApp messaging, mock provider) — awaiting authenticated end-to-end verification.** Development build with synthetic data only. Not approved for real patient data: see the legal and hosting blockers in [`docs/OPEN_DECISIONS.md`](docs/OPEN_DECISIONS.md).
 
 ## Documents
 
@@ -29,6 +29,8 @@ cp .env.example .env.local      # then paste the publishable key from `pnpm exec
 pnpm dev:all                    # starts local Supabase, then Next.js on http://localhost:3000
 pnpm db:reset                   # re-applies migrations and loads synthetic seed data
 ```
+
+The WhatsApp worker runs separately: `pnpm worker` (mock provider by default; see `.env.example`).
 
 Seeded users (local only, password `Synthetic-Pass-2026`) are listed at the top of [`supabase/seed.sql`](supabase/seed.sql).
 

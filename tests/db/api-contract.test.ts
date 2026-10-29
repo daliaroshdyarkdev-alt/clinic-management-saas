@@ -10,7 +10,7 @@ import { adminPool, closePool } from "./helpers";
 
 afterAll(closePool);
 
-const SOURCE_DIRS = ["app", "modules", "lib", "components"];
+const SOURCE_DIRS = ["app", "modules", "lib", "components", "worker"];
 
 async function sourceFiles(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true }).catch(() => []);
@@ -73,7 +73,7 @@ describe("application ↔ database contract", () => {
   it("every rpc() call matches a public function signature exactly", async () => {
     const calls: { file: string; fn: string; args: string[] }[] = [];
     for (const { file, text } of await allSource()) {
-      for (const m of text.matchAll(/(?:\.rpc|callRpc(?:<[^>]*>)?)\(\s*"(\w+)"\s*,\s*\{([^}]*)\}/g)) {
+      for (const m of text.matchAll(/(?:\.rpc|callRpc)(?:<[^>]*>)?\(\s*"(\w+)"\s*,\s*\{([^}]*)\}/g)) {
         calls.push({ file, fn: m[1], args: [...m[2].matchAll(/(p_\w+)\s*:/g)].map((a) => a[1]).sort() });
       }
     }

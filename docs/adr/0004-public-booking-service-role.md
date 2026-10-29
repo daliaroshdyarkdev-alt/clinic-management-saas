@@ -14,3 +14,8 @@ Patients request appointments and answer alternative proposals without an accoun
 ## Consequences
 - The service-role key bypasses RLS if misused; the static test and code review are the controls. Keep the module small.
 - Anti-bot challenges and per-IP rate limits are still OPEN (OD-B04); a per-phone limit (3 open requests per clinic) is the only abuse guard today. Add edge rate limiting before production.
+
+## Amendment (Milestone 5 — WhatsApp)
+- `modules/messaging/webhook-service.ts` may also use the service client, and only to call `process_whatsapp_webhook` (idempotent per provider event id), after the route has verified Meta's `X-Hub-Signature-256` HMAC. The static test enforces the per-file function allow-list.
+- The background worker (`worker/index.ts`) runs outside Next.js with its own service-role client restricted in code to `worker_*` functions. Those functions are executable only by `service_role`.
+- To send the patient their offer link, the raw offer token is kept in the outbox row (`message_intents.variables`). That column is excluded from every client grant (OD-E12).

@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { enterRouteLocale } from "@/i18n/locale";
 import { reviewDuplicate } from "@/modules/clinical/actions";
+import { recordConsent } from "@/modules/messaging/actions";
+import { getConsents } from "@/modules/messaging/queries";
 import { registerPatient } from "@/modules/patients/actions";
 import { getOpenDuplicates, searchPatients } from "@/modules/patients/queries";
 import { getWorkspace } from "@/modules/tenancy/workspace";
@@ -24,6 +26,10 @@ export default async function PatientsPage({ params, searchParams }: PageProps<"
     searchPatients(clinic.clinicId, term),
     getOpenDuplicates(clinic.clinicId),
   ]);
+  const consents = await getConsents(
+    clinic.clinicId,
+    patients.map((p) => p.id),
+  );
 
   return (
     <div className="grid max-w-4xl gap-6">
@@ -82,6 +88,16 @@ export default async function PatientsPage({ params, searchParams }: PageProps<"
             </span>
             <span className="text-muted-foreground">
               <span dir="ltr">{p.identity.phone_e164}</span> · {p.identity.date_of_birth}
+            </span>
+            <span className="flex w-full flex-wrap items-center gap-2 text-xs">
+              {t(`whatsappConsent.${consents.has(p.id) ? (consents.get(p.id) ? "granted" : "withdrawn") : "unknown"}`)}
+              <ActionForm action={recordConsent}>
+                <input type="hidden" name="patientId" value={p.id} />
+                <input type="hidden" name="granted" value={consents.get(p.id) ? "false" : "true"} />
+                <SubmitButton size="sm" variant="ghost">
+                  {consents.get(p.id) ? t("withdrawConsent") : t("recordConsent")}
+                </SubmitButton>
+              </ActionForm>
             </span>
           </li>
         ))}

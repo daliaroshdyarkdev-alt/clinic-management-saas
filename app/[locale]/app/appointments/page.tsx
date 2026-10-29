@@ -75,6 +75,7 @@ export default async function AppointmentsPage({ params, searchParams }: PagePro
         isToday={date === today}
         viewerIsOwner={clinic.role === "owner"}
         viewerDoctorId={workspace.doctorId}
+        canMessage={workspace.capabilities.includes("messaging.send")}
       />
     </div>
   );

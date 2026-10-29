@@ -8,7 +8,9 @@ export type ClinicCapability =
   | "finance.collect"
   | "finance.approve"
   | "finance.reports"
-  | "finance.accounts";
+  | "finance.accounts"
+  | "messaging.send"
+  | "messaging.budget";
 
 export const FINANCE_CAPABILITIES = [
   "finance.collect",
@@ -16,6 +18,15 @@ export const FINANCE_CAPABILITIES = [
   "finance.reports",
   "finance.accounts",
 ] as const;
+
+export const MESSAGING_CAPABILITIES = ["messaging.send", "messaging.budget"] as const;
+
+export const ALL_CAPABILITIES: readonly ClinicCapability[] = [
+  "staff.manage",
+  "appointments.manage",
+  ...FINANCE_CAPABILITIES,
+  ...MESSAGING_CAPABILITIES,
+];
 
 export type WorkspaceClinic = {
   clinicId: string;

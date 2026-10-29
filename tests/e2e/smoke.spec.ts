@@ -111,3 +111,18 @@ test("front-desk pages require sign-in", async ({ page }) => {
     await expect(page).toHaveURL(new RegExp(`/en/login\\?next=%2Fen%2Fapp%2F${path}$`));
   }
 });
+
+test("WhatsApp webhook rejects unsigned callbacks and wrong verify tokens", async ({ request }) => {
+  const post = await request.post("/api/webhooks/whatsapp", {
+    data: { entry: [] },
+    headers: { "x-hub-signature-256": "sha256=00" },
+  });
+  expect(post.status()).toBe(401);
+  const get = await request.get("/api/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=wrong&hub.challenge=1");
+  expect(get.status()).toBe(403);
+});
+
+test("WhatsApp settings require sign-in", async ({ page }) => {
+  await page.goto("/en/app/whatsapp");
+  await expect(page).toHaveURL(/\/en\/login\?next=%2Fen%2Fapp%2Fwhatsapp$/);
+});
