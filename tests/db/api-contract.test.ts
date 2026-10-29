@@ -31,32 +31,49 @@ async function allSource(): Promise<{ file: string; text: string }[]> {
   );
 }
 
-/** Parses "a, b, alias:table!inner(c, d)" into plain columns and embeds. */
-function parseSelect(select: string): { columns: string[]; embeds: { table: string; columns: string[] }[] } {
-  const columns: string[] = [];
-  const embeds: { table: string; columns: string[] }[] = [];
-  const embedRe = /(?:\w+:)?(\w+)(?:!\w+)?\(([^)]*)\)/g;
-  for (const match of select.matchAll(embedRe)) {
-    embeds.push({
-      table: match[1],
-      columns: match[2]
-        .split(",")
-        .map((c) => c.trim())
-        .filter(Boolean),
-    });
+/** Splits on commas that are not inside parentheses. */
+function splitTopLevel(value: string): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let current = "";
+  for (const ch of value) {
+    if (ch === "(") depth++;
+    if (ch === ")") depth--;
+    if (ch === "," && depth === 0) {
+      parts.push(current);
+      current = "";
+    } else {
+      current += ch;
+    }
   }
-  for (const part of select.replace(embedRe, "").split(",")) {
-    const column = part.trim();
-    if (column) columns.push(column);
+  parts.push(current);
+  return parts.map((p) => p.trim()).filter(Boolean);
+}
+
+/**
+ * Flattens a PostgREST select such as
+ * "a, b, alias:table!inner(c, nested:other!inner(d))" into (table, column) pairs.
+ */
+function parseSelect(table: string, select: string): { table: string; column: string }[] {
+  const out: { table: string; column: string }[] = [];
+  for (const item of splitTopLevel(select)) {
+    const open = item.indexOf("(");
+    if (open === -1) {
+      out.push({ table, column: item });
+      continue;
+    }
+    const head = item.slice(0, open);
+    const embedded = head.split(":").pop()!.split("!")[0];
+    out.push(...parseSelect(embedded, item.slice(open + 1, item.lastIndexOf(")"))));
   }
-  return { columns, embeds };
+  return out;
 }
 
 describe("application ↔ database contract", () => {
   it("every rpc() call matches a public function signature exactly", async () => {
     const calls: { file: string; fn: string; args: string[] }[] = [];
     for (const { file, text } of await allSource()) {
-      for (const m of text.matchAll(/\.rpc\(\s*"(\w+)"\s*,\s*\{([^}]*)\}/g)) {
+      for (const m of text.matchAll(/(?:\.rpc|callRpc(?:<[^>]*>)?)\(\s*"(\w+)"\s*,\s*\{([^}]*)\}/g)) {
         calls.push({ file, fn: m[1], args: [...m[2].matchAll(/(p_\w+)\s*:/g)].map((a) => a[1]).sort() });
       }
     }
@@ -77,11 +94,13 @@ describe("application ↔ database contract", () => {
   it("every selected column exists and is readable by authenticated users", async () => {
     const checks: { file: string; table: string; column: string }[] = [];
     for (const { file, text } of await allSource()) {
-      for (const m of text.matchAll(/\.from\(\s*"(\w+)"\s*\)\s*\.select\(\s*"([^"]+)"/g)) {
+      // Select lists kept in string constants, e.g. `const SELECT = "..."`.
+      const constants = new Map([...text.matchAll(/const (\w+)\s*=\s*"([^"]+)"/g)].map((c) => [c[1], c[2]]));
+      for (const m of text.matchAll(/\.from\(\s*"(\w+)"\s*\)\s*\.select\(\s*(?:"([^"]+)"|(\w+)\s*[,)])/g)) {
         if (m[1] === "licenses") continue; // storage bucket, not a table
-        const { columns, embeds } = parseSelect(m[2]);
-        columns.forEach((column) => checks.push({ file, table: m[1], column }));
-        embeds.forEach((e) => e.columns.forEach((column) => checks.push({ file, table: e.table, column })));
+        const select = m[2] ?? constants.get(m[3]);
+        expect(select, `${file}: unresolved select constant ${m[3]}`).toBeDefined();
+        parseSelect(m[1], select!).forEach((c) => checks.push({ file, ...c }));
       }
     }
     expect(checks.length).toBeGreaterThan(20);
