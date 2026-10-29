@@ -92,3 +92,22 @@ test("licence files are not reachable without a session", async ({ request }) =>
   const response = await request.get("/api/licenses/00000000-0000-4000-8000-000000000000", { maxRedirects: 0 });
   expect(response.status()).toBe(401);
 });
+
+test("public booking page degrades safely when the clinic is unavailable", async ({ page }) => {
+  await page.goto("/en/book/00000000-0000-4000-8000-000000000000");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Request an appointment");
+  await expect(page.getByText("This clinic is not taking online requests right now.")).toBeVisible();
+});
+
+test("an invalid offer link reveals nothing", async ({ page }) => {
+  await page.goto("/ar/offer/not-a-real-token");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await expect(page.getByText("هذا الرابط غير صالح.")).toBeVisible();
+});
+
+test("front-desk pages require sign-in", async ({ page }) => {
+  for (const path of ["queue", "appointments", "requests", "patients", "doctors", "my-queue"]) {
+    await page.goto(`/en/app/${path}`);
+    await expect(page).toHaveURL(new RegExp(`/en/login\\?next=%2Fen%2Fapp%2F${path}$`));
+  }
+});

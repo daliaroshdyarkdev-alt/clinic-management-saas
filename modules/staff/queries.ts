@@ -81,17 +81,20 @@ export async function getOpenInvitations(clinicId: string): Promise<OpenInvitati
   return z.array(invitationSchema).parse(data);
 }
 
-export async function getManagerCanManageStaff(clinicId: string): Promise<boolean> {
+/** Capabilities the owner granted to managers. */
+export async function getManagerPermissions(
+  clinicId: string,
+): Promise<Record<"staff.manage" | "appointments.manage", boolean>> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("clinic_role_permissions")
-    .select("allowed")
+    .select("capability, allowed")
     .eq("clinic_id", clinicId)
-    .eq("role", "manager")
-    .eq("capability", "staff.manage")
-    .maybeSingle();
+    .eq("role", "manager");
   if (error) throw new Error("Failed to load permissions");
-  return data?.allowed === true;
+  const rows = z.array(z.object({ capability: z.string(), allowed: z.boolean() })).parse(data);
+  const allowed = (capability: string) => rows.some((r) => r.capability === capability && r.allowed);
+  return { "staff.manage": allowed("staff.manage"), "appointments.manage": allowed("appointments.manage") };
 }
 
 const previewSchema = z.object({

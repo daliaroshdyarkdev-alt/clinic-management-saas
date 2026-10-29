@@ -20,7 +20,10 @@ const membershipRowSchema = z.object({
   }),
 });
 
-const permissionRowSchema = z.object({ capability: z.enum(["staff.manage"]), allowed: z.boolean() });
+const permissionRowSchema = z.object({
+  capability: z.enum(["staff.manage", "appointments.manage"]),
+  allowed: z.boolean(),
+});
 
 export type Workspace = {
   user: CurrentUser;
@@ -28,6 +31,8 @@ export type Workspace = {
   active: WorkspaceClinic | null;
   /** Capabilities of the caller in the active clinic (owners hold all). Presentation only; SQL re-checks. */
   capabilities: ClinicCapability[];
+  /** The caller's active doctor record in the active clinic, if any. */
+  doctorId: string | null;
   isPlatformAdmin: boolean;
 };
 
@@ -66,7 +71,9 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
 
   let capabilities: ClinicCapability[] = [];
   if (active?.role === "owner") {
-    capabilities = ["staff.manage"];
+    capabilities = ["staff.manage", "appointments.manage"];
+  } else if (active?.role === "receptionist") {
+    capabilities = ["appointments.manage"];
   } else if (active) {
     const { data, error } = await supabase
       .from("clinic_role_permissions")
@@ -81,5 +88,18 @@ export const getWorkspace = cache(async (): Promise<Workspace | null> => {
       .map((p) => p.capability);
   }
 
-  return { user, clinics, active, capabilities, isPlatformAdmin: admin.data !== null };
+  let doctorId: string | null = null;
+  if (active) {
+    const { data, error } = await supabase
+      .from("clinic_doctors")
+      .select("id")
+      .eq("clinic_id", active.clinicId)
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .maybeSingle();
+    if (error) throw new Error("Failed to load doctor profile");
+    doctorId = data?.id ?? null;
+  }
+
+  return { user, clinics, active, capabilities, doctorId, isPlatformAdmin: admin.data !== null };
 });

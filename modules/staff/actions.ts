@@ -99,19 +99,21 @@ export async function changeMemberRole(_prev: StaffFormState, formData: FormData
   return { error: null, done: true };
 }
 
-/** STA-005: owner lets managers invite/suspend/deactivate operational staff. */
-export async function setManagerStaffPermission(_prev: StaffFormState, formData: FormData): Promise<StaffFormState> {
+/** STA-005 / APT-015: owner-only delegation of a capability to managers. */
+export async function setManagerPermission(_prev: StaffFormState, formData: FormData): Promise<StaffFormState> {
   const locale = localeFrom(formData);
   const clinicId = await activeClinicId();
   if (!clinicId) return { error: "forbidden" };
-  const allowed = z.enum(["true", "false"]).safeParse(formData.get("allowed"));
-  if (!allowed.success) return { error: "invalid_input" };
+  const parsed = z
+    .object({ capability: z.enum(["staff.manage", "appointments.manage"]), allowed: z.enum(["true", "false"]) })
+    .safeParse({ capability: formData.get("capability"), allowed: formData.get("allowed") });
+  if (!parsed.success) return { error: "invalid_input" };
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc("set_role_permission", {
     p_clinic_id: clinicId,
     p_role: "manager",
-    p_capability: "staff.manage",
-    p_allowed: allowed.data === "true",
+    p_capability: parsed.data.capability,
+    p_allowed: parsed.data.allowed === "true",
   });
   if (error) return { error: toDomainError(error) };
   refreshStaff(locale);

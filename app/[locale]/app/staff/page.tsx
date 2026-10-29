@@ -4,13 +4,8 @@ import { SubmitButton } from "@/components/forms/submit-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { enterRouteLocale } from "@/i18n/locale";
-import {
-  changeMemberRole,
-  revokeInvitation,
-  setManagerStaffPermission,
-  setMembershipStatus,
-} from "@/modules/staff/actions";
-import { getManagerCanManageStaff, getOpenInvitations, getStaff, type StaffMember } from "@/modules/staff/queries";
+import { changeMemberRole, revokeInvitation, setManagerPermission, setMembershipStatus } from "@/modules/staff/actions";
+import { getManagerPermissions, getOpenInvitations, getStaff, type StaffMember } from "@/modules/staff/queries";
 import { getWorkspace } from "@/modules/tenancy/workspace";
 import { InviteForm } from "./invite-form";
 
@@ -29,10 +24,10 @@ export default async function StaffPage({ params }: PageProps<"/[locale]/app/sta
   }
 
   const isOwner = clinic.role === "owner";
-  const [staff, invitations, managerCanManage] = await Promise.all([
+  const [staff, invitations, managerPermissions] = await Promise.all([
     getStaff(clinic.clinicId),
     getOpenInvitations(clinic.clinicId),
-    isOwner ? getManagerCanManageStaff(clinic.clinicId) : Promise.resolve(false),
+    isOwner ? getManagerPermissions(clinic.clinicId) : Promise.resolve(null),
   ]);
   const invitableRoles = isOwner ? ASSIGNABLE_ROLES : ASSIGNABLE_ROLES.filter((r) => r !== "manager");
 
@@ -167,15 +162,23 @@ export default async function StaffPage({ params }: PageProps<"/[locale]/app/sta
             <CardDescription>{t("permissionsDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <ActionForm action={setManagerStaffPermission} successText={t("saved")}>
-              <input type="hidden" name="allowed" value={managerCanManage ? "false" : "true"} />
-              <p className="text-sm">{managerCanManage ? t("managerCanManageStaff") : t("managerCannotManageStaff")}</p>
-              <div>
-                <SubmitButton size="sm" variant="outline">
-                  {managerCanManage ? t("revokeFromManagers") : t("grantToManagers")}
-                </SubmitButton>
-              </div>
-            </ActionForm>
+            <div className="grid gap-4">
+              {(["staff.manage", "appointments.manage"] as const).map((capability) => {
+                const granted = managerPermissions?.[capability] === true;
+                return (
+                  <ActionForm key={capability} action={setManagerPermission} successText={t("saved")}>
+                    <input type="hidden" name="capability" value={capability} />
+                    <input type="hidden" name="allowed" value={granted ? "false" : "true"} />
+                    <p className="text-sm">{t(`capability.${capability}.${granted ? "on" : "off"}`)}</p>
+                    <div>
+                      <SubmitButton size="sm" variant="outline">
+                        {granted ? t("revokeFromManagers") : t("grantToManagers")}
+                      </SubmitButton>
+                    </div>
+                  </ActionForm>
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
       ) : null}

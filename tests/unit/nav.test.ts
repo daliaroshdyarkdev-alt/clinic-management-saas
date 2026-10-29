@@ -4,36 +4,47 @@ import { NAV_ITEMS, navItemsFor } from "@/lib/navigation/nav";
 const keys = (...args: Parameters<typeof navItemsFor>) => navItemsFor(...args).map((i) => i.key);
 
 describe("role-aware navigation", () => {
-  it("receptionist sees appointments and patients but not finance or staff", () => {
-    expect(keys("receptionist")).toEqual(["overview", "appointments", "patients"]);
+  it("receptionist (implicit appointments.manage) runs the front desk but sees no finance or staff", () => {
+    expect(keys("receptionist", ["appointments.manage"])).toEqual([
+      "overview",
+      "queue",
+      "appointments",
+      "requests",
+      "patients",
+    ]);
   });
 
-  it("doctor sees only their own queue, not the clinic-wide appointment list", () => {
-    expect(keys("doctor")).toEqual(["overview", "myQueue"]);
+  it("doctor sees their own queue and schedule only", () => {
+    expect(keys("doctor", [], { isDoctor: true })).toEqual(["overview", "myQueue", "doctors"]);
   });
 
   it("cashier sees finance only", () => {
     expect(keys("cashier")).toEqual(["overview", "finance"]);
   });
 
-  it("only the owner sees onboarding and subscription", () => {
-    for (const role of ["manager", "receptionist", "cashier", "doctor"] as const) {
-      expect(keys(role, ["staff.manage"])).not.toContain("onboarding");
-      expect(keys(role)).not.toContain("subscription");
-    }
-    expect(keys("owner")).toEqual(expect.arrayContaining(["onboarding", "staff", "subscription"]));
-  });
-
-  it("a manager sees staff management only when the owner granted staff.manage", () => {
-    expect(keys("manager")).not.toContain("staff");
+  it("a manager sees appointment and staff screens only when the owner granted them", () => {
+    expect(keys("manager")).toEqual(["overview"]);
+    expect(keys("manager", ["appointments.manage"])).toContain("appointments");
     expect(keys("manager", ["staff.manage"])).toContain("staff");
   });
 
-  it("live items in Milestone 1 are overview, onboarding and staff", () => {
-    expect(NAV_ITEMS.filter((i) => i.milestone === null).map((i) => i.key)).toEqual([
-      "overview",
-      "onboarding",
-      "staff",
+  it("only the owner sees onboarding and subscription", () => {
+    for (const role of ["manager", "receptionist", "cashier", "doctor"] as const) {
+      expect(keys(role, ["staff.manage", "appointments.manage"], { isDoctor: true })).not.toContain("onboarding");
+      expect(keys(role)).not.toContain("subscription");
+    }
+  });
+
+  it("an owner who also practises sees their own queue", () => {
+    expect(keys("owner", ["staff.manage", "appointments.manage"], { isDoctor: true })).toContain("myQueue");
+    expect(keys("owner", ["staff.manage", "appointments.manage"])).not.toContain("myQueue");
+  });
+
+  it("finance, WhatsApp and subscription are still marked with their milestones", () => {
+    expect(NAV_ITEMS.filter((i) => i.milestone !== null).map((i) => i.key)).toEqual([
+      "finance",
+      "whatsapp",
+      "subscription",
     ]);
   });
 });

@@ -14,7 +14,7 @@ export default async function AppLayout({ children }: LayoutProps<"/[locale]/app
   const workspace = await getWorkspace();
   // The proxy already redirects anonymous visitors; this is the authoritative check.
   if (!workspace) redirect(`/${locale}/login`);
-  const { active, clinics, capabilities, isPlatformAdmin } = workspace;
+  const { active, clinics, capabilities, doctorId, isPlatformAdmin } = workspace;
   const t = await getTranslations("shell");
 
   return (
@@ -50,7 +50,7 @@ export default async function AppLayout({ children }: LayoutProps<"/[locale]/app
       <div className="flex flex-1 flex-col md:flex-row">
         {active ? (
           <aside className="border-b p-2 md:w-60 md:shrink-0 md:border-b-0 md:border-e md:p-4">
-            <SideNav role={active.role} capabilities={capabilities} />
+            <SideNav role={active.role} capabilities={capabilities} isDoctor={doctorId !== null} />
           </aside>
         ) : null}
         {/* Keyed by clinic: switching clinics remounts all client state. */}

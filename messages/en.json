@@ -41,7 +41,10 @@
       "whatsapp": "WhatsApp",
       "staff": "Staff",
       "subscription": "Subscription",
-      "onboarding": "Licences & verification"
+      "onboarding": "Licences & verification",
+      "queue": "Today's queue",
+      "requests": "Booking requests",
+      "doctors": "Doctors & schedules"
     },
     "roles": {
       "owner": "Owner",
@@ -160,9 +163,23 @@
     "permissionsDescription": "Only you, as owner, can assign roles and change permissions.",
     "managerCanManageStaff": "Managers can invite, suspend and deactivate receptionists, cashiers and doctors.",
     "managerCannotManageStaff": "Managers cannot manage staff.",
-    "grantToManagers": "Allow managers to manage staff",
+    "grantToManagers": "Allow for managers",
     "revokeFromManagers": "Remove this permission",
-    "saved": "Saved."
+    "saved": "Saved.",
+    "capability": {
+      "staff": {
+        "manage": {
+          "on": "Managers can invite, suspend and deactivate receptionists, cashiers and doctors.",
+          "off": "Managers cannot manage staff."
+        }
+      },
+      "appointments": {
+        "manage": {
+          "on": "Managers can manage appointments, requests and the queue for all doctors.",
+          "off": "Managers cannot manage appointments."
+        }
+      }
+    }
   },
   "invite": {
     "title": "Clinic invitation",
@@ -243,6 +260,273 @@
     "membership_deactivated": "This person's access to the clinic was permanently deactivated.",
     "owner_protected": "The clinic owner's access and role can't be changed.",
     "reason_required": "Please enter a reason.",
-    "too_many_pending_clinics": "You already have three clinics waiting for verification."
+    "too_many_pending_clinics": "You already have three clinics waiting for verification.",
+    "already_booked": "This patient is already booked in this session.",
+    "already_doctor": "This person is already a doctor in the clinic.",
+    "clinic_not_operational": "The clinic must be verified and active first.",
+    "invalid_name": "Enter a name of 2 to 200 characters.",
+    "invalid_patient": "Check the patient details (mobile in +20… format, valid birth date).",
+    "invalid_request": "Check your details (mobile in +20… format).",
+    "invalid_slot": "This time is not a valid slot for the session.",
+    "not_a_doctor_member": "Choose a staff member with the doctor role.",
+    "not_session_day": "Check-in is possible only on the session day.",
+    "offer_closed": "This proposal is no longer open.",
+    "offer_invalid": "This link is not valid.",
+    "online_booking_unavailable": "This clinic is not taking online requests right now.",
+    "overbooking_not_allowed": "This doctor does not allow overbooking.",
+    "patient_not_found": "No patient with this chart number in this clinic.",
+    "placement_not_allowed": "The doctor's rules don't allow choosing the position here.",
+    "request_not_open": "This request has already been handled.",
+    "session_cancelled": "This session is cancelled.",
+    "session_full": "This session is full.",
+    "session_in_past": "This session has already ended.",
+    "session_not_found": "Session not found.",
+    "session_overlap": "This overlaps another session of the doctor.",
+    "slot_taken": "This time is already booked.",
+    "too_early": "The session hasn't started yet.",
+    "too_many_requests": "You already have open requests at this clinic.",
+    "walk_in_requires_queue": "Walk-ins are possible only for queue sessions."
+  },
+  "weekdays": {
+    "0": "Sunday",
+    "1": "Monday",
+    "2": "Tuesday",
+    "3": "Wednesday",
+    "4": "Thursday",
+    "5": "Friday",
+    "6": "Saturday"
+  },
+  "doctors": {
+    "title": "Doctors & schedules",
+    "noAccess": "You don't have access to doctor schedules.",
+    "notConfigured": "Booking method not set",
+    "inactive": "Inactive",
+    "configure": "Schedule settings",
+    "none": "No doctors yet.",
+    "addTitle": "Add a doctor",
+    "addDescription": "Choose a staff member with the doctor role (or yourself, if you practise).",
+    "noCandidates": "Invite a doctor from the Staff page first.",
+    "member": "Staff member",
+    "displayName": "Name shown to patients",
+    "specialty": "Specialty",
+    "add": "Add doctor",
+    "onlineTitle": "Online booking requests",
+    "onlineDescription": "Patients can request a time through a public page. Every request waits for reception's approval.",
+    "onlineOn": "Online requests are on.",
+    "onlineOff": "Online requests are off.",
+    "publicLink": "Public page",
+    "turnOn": "Turn on",
+    "turnOff": "Turn off",
+    "method": {
+      "timed": "Timed appointments",
+      "queue": "Queue numbers"
+    },
+    "policyTitle": "Booking rules",
+    "policyDescription": "These rules apply to this doctor's sessions only.",
+    "saved": "Saved.",
+    "savePolicy": "Save rules",
+    "weeklyTitle": "Weekly schedule",
+    "weeklyDescription": "Times are in Cairo local time. Changes regenerate future sessions that have no bookings.",
+    "policyFirst": "Save the booking rules first; sessions are created once the booking method is chosen.",
+    "exceptionsTitle": "Days off and extra sessions",
+    "exceptionsDescription": "A day off cancels that day's sessions; existing bookings stay listed for reception to handle.",
+    "date": "Date",
+    "kind": "Type",
+    "dayOff": "Day off",
+    "extraSession": "Extra session",
+    "reason": "Reason",
+    "from": "From",
+    "to": "To",
+    "capacity": "Places",
+    "exceptionHint": "Times and places are needed only for extra sessions (places only for queue numbers).",
+    "addException": "Add",
+    "noWeekly": "No weekly sessions yet.",
+    "weekday": "Day",
+    "remove": "Remove",
+    "addBlock": "Add session",
+    "saveSchedule": "Save schedule"
+  },
+  "policy": {
+    "method": {
+      "label": "Booking method",
+      "queue": "Queue numbers (session capacity)",
+      "timed": "Timed appointments"
+    },
+    "slotMinutes": "Appointment length (minutes, timed only)",
+    "overbooking": {
+      "label": "When a session is full",
+      "disallow": "Do not allow overbooking",
+      "receptionist_override": "Reception may overbook with a reason",
+      "doctor_or_owner_approval": "Overbooking needs doctor or owner approval"
+    },
+    "queueOrdering": {
+      "label": "Queue order",
+      "fcfs": "First come, first served (arrival)",
+      "reservation_priority": "By reservation number"
+    },
+    "walkIn": {
+      "label": "Walk-ins",
+      "auto_append": "Added to the end automatically",
+      "receptionist_placement": "Reception chooses the position"
+    },
+    "absentWhenCalled": {
+      "label": "Patient absent when called",
+      "move_to_end": "Move to the end on return",
+      "skip_and_prioritize": "Skip now, call first on return",
+      "receptionist_assignment": "Reception assigns the position"
+    },
+    "patientCancellation": {
+      "label": "Patient cancellation",
+      "receptionist_only": "Through reception only",
+      "patient_self_service": "Patient self-service",
+      "patient_request_approval": "Patient requests, reception approves"
+    },
+    "manualOnlyNote": "Late arrivals and no-shows are handled manually by reception until the clinic's thresholds are agreed. Patient self-service cancellation needs the patient links that arrive with WhatsApp messaging."
+  },
+  "board": {
+    "method": {
+      "timed": "Timed",
+      "queue": "Queue"
+    },
+    "remaining": "{n} of {capacity} places left",
+    "freeSlots": "{n} free times",
+    "cancelled": "Cancelled",
+    "callNext": "Call next ({n} waiting)",
+    "empty": "No bookings yet.",
+    "reservation": "Reservation {n}",
+    "waiting": "Waiting no. {n}",
+    "status": {
+      "awaiting_approval": "Awaiting overbooking approval",
+      "booked": "Booked",
+      "checked_in": "Waiting",
+      "called": "Called in",
+      "absent": "Absent when called",
+      "completed": "Seen",
+      "cancelled": "Cancelled",
+      "no_show": "No-show"
+    },
+    "overbooked": "Overbooked",
+    "source": {
+      "walk_in": "Walk-in",
+      "online_request": "Online request"
+    },
+    "approveOverbooking": "Approve",
+    "rejectOverbooking": "Reject",
+    "checkIn": "Check in",
+    "complete": "Done",
+    "absent": "Not here",
+    "returned": "Back",
+    "placeAtEnd": "At the end",
+    "placeBefore": "Before {name}",
+    "place": "Place",
+    "more": "Cancel / no-show…",
+    "reason": "Reason",
+    "cancel": "Cancel booking",
+    "noShow": "No-show",
+    "book": "Book a patient",
+    "chartNumber": "Chart number",
+    "slot": "Time",
+    "overbook": "Overbook if full",
+    "overbookReason": "Reason for overbooking",
+    "bookSubmit": "Book",
+    "walkIn": "Walk-in patient",
+    "walkInSubmit": "Add and check in",
+    "cancelSession": "Cancel this session…",
+    "cancelSessionHint": "Bookings stay listed so you can cancel or rebook each patient.",
+    "cancelSessionSubmit": "Cancel session",
+    "noSessions": "No sessions on this day.",
+    "noAccess": "You don't have access to appointments in this clinic.",
+    "appointmentsTitle": "Appointments",
+    "previousDay": "Previous day",
+    "today": "Today",
+    "nextDay": "Next day",
+    "doctor": "Doctor",
+    "allDoctors": "All doctors",
+    "filter": "Show",
+    "queueTitle": "Today's queue",
+    "myQueueTitle": "My queue today"
+  },
+  "patients": {
+    "noAccess": "You don't have access to the patient registry.",
+    "title": "Patients",
+    "search": "Search",
+    "searchHint": "Name, phone or chart number",
+    "searchSubmit": "Search",
+    "none": "No patients found.",
+    "registerTitle": "Register a patient",
+    "registerDescription": "Administrative details only. Medical records are kept by the treating doctor.",
+    "registered": "Patient registered.",
+    "fullName": "Full name",
+    "phone": "Mobile (international format)",
+    "dateOfBirth": "Date of birth",
+    "gender": "Gender",
+    "female": "Female",
+    "male": "Male",
+    "address": "Address",
+    "identification": "ID (optional)",
+    "language": "Preferred language",
+    "noMergeNote": "Possible duplicates will be flagged for review in a later release; records are never merged automatically.",
+    "registerSubmit": "Register"
+  },
+  "requests": {
+    "noAccess": "You don't have access to booking requests.",
+    "title": "Booking requests",
+    "intro": "Online requests are not bookings until you approve them. Alternatives hold no place: availability is checked again when the patient accepts.",
+    "none": "No open requests.",
+    "status": {
+      "submitted": "New",
+      "alternative_proposed": "Alternative sent",
+      "alternative_declined": "Alternative declined",
+      "unavailable": "Alternative no longer available",
+      "confirmed": "Confirmed",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    },
+    "needsAttention": "Needs your attention",
+    "chartNumber": "Patient chart number",
+    "registerFirst": "New patient? Register first:",
+    "patientsLink": "Patients",
+    "approve": "Book requested time",
+    "waitingForPatient": "Waiting for the patient's answer.",
+    "alternative": "Alternative time",
+    "propose": "Propose alternative",
+    "linkCreated": "Send this link to the patient (shown once):",
+    "reason": "Reason",
+    "reject": "Reject",
+    "placesLeft": "{n} places left"
+  },
+  "publicBooking": {
+    "title": "Request an appointment",
+    "unavailable": "This clinic is not taking online requests right now.",
+    "intro": "Choose a time and leave your details. The clinic will confirm your appointment.",
+    "noAvailability": "No times are available in the next two weeks.",
+    "queue": "queue number",
+    "time": "Doctor and time",
+    "name": "Full name",
+    "phone": "Mobile (international format)",
+    "privacy": "Your name and mobile number are shared only with this clinic to handle your request.",
+    "sending": "Sending…",
+    "submit": "Send request",
+    "submitted": "Request sent. This is not yet a confirmed appointment — the clinic will contact you."
+  },
+  "offer": {
+    "title": "Proposed appointment",
+    "invalid": "This link is not valid.",
+    "summary": "{clinic} proposes an appointment with {doctor} on {when}.",
+    "queueNote": "This is a queue session: you will receive a reservation number; the time shown is when the session starts.",
+    "notHeld": "The place is not reserved until you accept, and may be taken by someone else.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "outcome": {
+      "confirmed": "Confirmed. Your appointment is booked.",
+      "unavailable": "Sorry, this time was taken before you accepted. The clinic has been notified and will contact you.",
+      "declined": "You declined. The clinic has been notified."
+    },
+    "closed": {
+      "accepted": "You already accepted this proposal.",
+      "declined": "You declined this proposal.",
+      "unavailable": "This time is no longer available. The clinic will contact you.",
+      "withdrawn": "The clinic replaced this proposal."
+    }
   }
 }

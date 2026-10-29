@@ -3,13 +3,21 @@ import { navItemsFor } from "@/lib/navigation/nav";
 import type { ClinicCapability, ClinicRole } from "@/modules/tenancy/active-clinic";
 import { NavLink } from "./nav-link";
 
-export async function SideNav({ role, capabilities }: { role: ClinicRole; capabilities: readonly ClinicCapability[] }) {
+export async function SideNav({
+  role,
+  capabilities,
+  isDoctor,
+}: {
+  role: ClinicRole;
+  capabilities: readonly ClinicCapability[];
+  isDoctor: boolean;
+}) {
   const t = await getTranslations("shell");
   const tc = await getTranslations("common");
 
   return (
     <nav aria-label={t("navigation")} className="flex gap-1 overflow-x-auto md:flex-col">
-      {navItemsFor(role, capabilities).map((item) =>
+      {navItemsFor(role, capabilities, { isDoctor }).map((item) =>
         item.milestone === null ? (
           <NavLink key={item.key} href={item.href}>
             {t(`nav.${item.key}`)}
