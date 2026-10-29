@@ -285,7 +285,16 @@
     "slot_taken": "This time is already booked.",
     "too_early": "The session hasn't started yet.",
     "too_many_requests": "You already have open requests at this clinic.",
-    "walk_in_requires_queue": "Walk-ins are possible only for queue sessions."
+    "walk_in_requires_queue": "Walk-ins are possible only for queue sessions.",
+    "consent_evidence_required": "Describe how the patient's identity was verified.",
+    "consultation_locked": "This consultation is completed and locked.",
+    "consultation_not_completed": "Corrections can be added after completion.",
+    "identity_mismatch": "These details don't match this patient's record.",
+    "invalid_payload": "Some values don't match the form.",
+    "invalid_template": "Check the form fields (name and type for each; choices for choice fields).",
+    "patient_not_arrived": "Check the patient in first.",
+    "required_fields_missing": "Fill in the required fields first.",
+    "template_required": "Create your consultation form first."
   },
   "weekdays": {
     "0": "Sunday",
@@ -344,7 +353,8 @@
     "weekday": "Day",
     "remove": "Remove",
     "addBlock": "Add session",
-    "saveSchedule": "Save schedule"
+    "saveSchedule": "Save schedule",
+    "editTemplate": "Edit my consultation form"
   },
   "policy": {
     "method": {
@@ -444,7 +454,11 @@
     "allDoctors": "All doctors",
     "filter": "Show",
     "queueTitle": "Today's queue",
-    "myQueueTitle": "My queue today"
+    "myQueueTitle": "My queue today",
+    "startConsultation": "Start consultation",
+    "continueConsultation": "Continue consultation",
+    "viewConsultation": "View consultation",
+    "reassign": "Hand over"
   },
   "patients": {
     "noAccess": "You don't have access to the patient registry.",
@@ -466,7 +480,17 @@
     "identification": "ID (optional)",
     "language": "Preferred language",
     "noMergeNote": "Possible duplicates will be flagged for review in a later release; records are never merged automatically.",
-    "registerSubmit": "Register"
+    "registerSubmit": "Register",
+    "duplicatesTitle": "Possible duplicate records",
+    "duplicatesDescription": "Review each pair. Records are never merged automatically.",
+    "reason": {
+      "phone": "same mobile",
+      "date_of_birth": "same birth date",
+      "name": "same name",
+      "identification": "same ID"
+    },
+    "notDuplicate": "Different people",
+    "confirmDuplicate": "Same person"
   },
   "requests": {
     "noAccess": "You don't have access to booking requests.",
@@ -528,5 +552,74 @@
       "unavailable": "This time is no longer available. The clinic will contact you.",
       "withdrawn": "The clinic replaced this proposal."
     }
+  },
+  "consultation": {
+    "noAccess": "Only the treating doctor can open this consultation.",
+    "gender": {
+      "male": "Male",
+      "female": "Female"
+    },
+    "status": {
+      "draft": "In progress",
+      "completed": "Completed"
+    },
+    "record": "Consultation record",
+    "lockedAt": "Completed and locked on {date}.",
+    "saveDraft": "Save draft",
+    "complete": "Complete and lock",
+    "completeHint": "After completion the record cannot be edited; later notes are added as linked corrections.",
+    "saved": "Saved.",
+    "yes": "Yes",
+    "no": "No",
+    "archived": "Archived information (fields no longer in your form)",
+    "corrections": "Corrections",
+    "correctionsHint": "The original record stays unchanged.",
+    "addCorrection": "Add correction",
+    "externalTitle": "Records from other clinics",
+    "externalDescription": "Only with the patient's explicit consent for this visit, after checking their identity. Access ends when this consultation is completed.",
+    "phone": "Patient mobile",
+    "dateOfBirth": "Date of birth",
+    "identification": "ID number (if any)",
+    "evidence": "How identity was verified",
+    "evidenceHint": "e.g. national ID card checked",
+    "consentStatement": "I confirm the patient, present in person, consented to sharing their records from other clinics with me for this visit only.",
+    "recordConsent": "Record consent",
+    "consentRecorded": "Consent recorded.",
+    "recordsCount": "{n} records",
+    "revoked": {
+      "consultation_completed": "ended with the visit",
+      "doctor_reassigned": "ended: doctor changed",
+      "patient_withdrew": "withdrawn by patient"
+    },
+    "viewExternal": "View",
+    "withdraw": "Patient withdrew",
+    "history": "Your earlier visits with this patient",
+    "backToVisit": "Back to the visit",
+    "externalUnavailable": "Access to these records has ended or is not authorised.",
+    "externalFrom": "Records from {clinic}",
+    "viewOnlyNotice": "View only, for this visit. Do not copy or photograph these records."
+  },
+  "template": {
+    "title": "My consultation form",
+    "ownOnly": "Each doctor edits only their own form.",
+    "version": "Current version: {version}",
+    "none": "No form yet. Add fields and save to start consultations.",
+    "label": "Field name",
+    "type": "Type",
+    "types": {
+      "text": "Short text",
+      "textarea": "Long text",
+      "number": "Number",
+      "date": "Date",
+      "select": "Choice",
+      "checkbox": "Yes / no"
+    },
+    "required": "Required",
+    "remove": "Remove",
+    "options": "Choices (comma separated)",
+    "addField": "Add field",
+    "save": "Save form",
+    "hint": "Saving creates a new version. Values of removed fields stay visible in past records as archived information.",
+    "saved": "Saved."
   }
 }

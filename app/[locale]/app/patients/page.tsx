@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { enterRouteLocale } from "@/i18n/locale";
+import { reviewDuplicate } from "@/modules/clinical/actions";
 import { registerPatient } from "@/modules/patients/actions";
-import { searchPatients } from "@/modules/patients/queries";
+import { getOpenDuplicates, searchPatients } from "@/modules/patients/queries";
 import { getWorkspace } from "@/modules/tenancy/workspace";
 
 export default async function PatientsPage({ params, searchParams }: PageProps<"/[locale]/app/patients">) {
@@ -19,11 +20,51 @@ export default async function PatientsPage({ params, searchParams }: PageProps<"
   }
   const { q } = await searchParams;
   const term = typeof q === "string" ? q.slice(0, 100) : "";
-  const patients = await searchPatients(clinic.clinicId, term);
+  const [patients, duplicates] = await Promise.all([
+    searchPatients(clinic.clinicId, term),
+    getOpenDuplicates(clinic.clinicId),
+  ]);
 
   return (
     <div className="grid max-w-4xl gap-6">
       <h1 className="text-2xl font-semibold">{t("title")}</h1>
+      {duplicates.length > 0 ? (
+        <Card className="border-warning">
+          <CardHeader>
+            <CardTitle>
+              <h2 className="text-lg">{t("duplicatesTitle")}</h2>
+            </CardTitle>
+            <CardDescription>{t("duplicatesDescription")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="divide-y rounded-md border">
+              {duplicates.map((d) => (
+                <li key={d.id} className="flex flex-wrap items-center justify-between gap-2 p-3 text-sm">
+                  <span>
+                    #{d.chartA} ↔ #{d.chartB} · {d.reasons.map((r) => t(`reason.${r}`)).join("، ")}
+                  </span>
+                  <span className="flex gap-2">
+                    <ActionForm action={reviewDuplicate}>
+                      <input type="hidden" name="candidateId" value={d.id} />
+                      <input type="hidden" name="status" value="not_duplicate" />
+                      <SubmitButton size="sm" variant="outline">
+                        {t("notDuplicate")}
+                      </SubmitButton>
+                    </ActionForm>
+                    <ActionForm action={reviewDuplicate}>
+                      <input type="hidden" name="candidateId" value={d.id} />
+                      <input type="hidden" name="status" value="confirmed_duplicate" />
+                      <SubmitButton size="sm" variant="outline">
+                        {t("confirmDuplicate")}
+                      </SubmitButton>
+                    </ActionForm>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      ) : null}
       <form className="flex flex-wrap items-end gap-2">
         <label className="grid flex-1 gap-1 text-sm">
           {t("search")}

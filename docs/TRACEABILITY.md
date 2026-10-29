@@ -21,8 +21,8 @@ Conventions used below:
 | INV-1 | Immutable `clinic_id`, tenant-scoped permissions | `private.forbid_clinic_id_change()` trigger on every clinic-owned table; RLS on `clinic_id` | `db: tenancy.clinic-id-immutable`, `db: meta.rls-enabled-on-all-public-tables` | M0 | foundation |
 | INV-2 | Membership derived from authenticated server state | RLS uses `auth.uid()` + `clinic_memberships` (status `active`); active-clinic cookie is a view hint, re-verified on each request | `db: tenancy.cross-tenant-denied`, `unit: active-clinic.resolve` | M0 | foundation |
 | INV-3 | Clinic switch invalidates cached clinic data | Switch = server action → cookie → `router.refresh()`; clinic shell keyed by `clinicId` so client state remounts; query keys prefixed by `clinicId` | `e2e: clinic-switch.isolation` (M1) | M0/M1 | foundation |
-| INV-4 | Medical content only for assigned open visit | Separate `clinical` schema, visit-scoped policy functions | `sec: medical.non-treating-denied` | M3 | planned |
-| INV-5 | Cross-clinic access per clinic + visit, view-only, expiring | `cross_clinic_access_grants` checked on every read | `sec: medical.cross-clinic-*` | M3 | planned |
+| INV-4 | Medical content only for assigned open visit | Separate `clinical` schema, visit-scoped policy functions | `sec: medical.non-treating-denied` | M3 | done (clinical schema unexposed; treating-doctor gateway functions) |
+| INV-5 | Cross-clinic access per clinic + visit, view-only, expiring | `cross_clinic_access_grants` checked on every read | `sec: medical.cross-clinic-*` | M3 | done (per visit + doctor grants; revoked on completion/withdrawal/reassignment) |
 | INV-6 | Finance append-only | No UPDATE/DELETE grants + triggers on posted tables | `db: finance.posted-immutable` | M4 | planned |
 | INV-7 | No clinical/financial data in telemetry | Redacting logger (`lib/telemetry`), Sentry `beforeSend` scrubber | `unit: telemetry.redaction` | M0 (logger) / M7 | foundation |
 | INV-8 | Idempotent background tasks | Outbox + idempotency keys, unique constraints | `race: worker.duplicate-delivery` | M2/M5 | planned |
@@ -45,10 +45,10 @@ Conventions used below:
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
 | PAT-001 | patients | `patient_identities`, `clinic_patients` | `action: registerPatient` | patients/new | `db: patients.cross-tenant-denied` | M3 | partial: minimal registry for booking (M2); duplicates and identity linking M3; ID type OPEN |
-| PAT-002 | patients | `duplicate_candidates` | `rpc: detect_duplicate_candidates` | patients/duplicates | `db: patients.no-auto-merge` | M3 | planned |
+| PAT-002 | patients | `duplicate_candidates` | `rpc: detect_duplicate_candidates` | patients/duplicates | `db: patients.no-auto-merge` | M3 | done (flag + review; never merged) |
 | PAT-003 | patients | `patient_identities` ↔ `clinic_patients` | — | — | `sec: patients.other-clinic-chart-hidden` | M3 | model in place (identity + clinic patient); cross-clinic linking M3 |
-| PAT-004 | patients, consent | `cross_clinic_access_grants` | — | — | `sec: medical.identity-match-no-access` | M3 | planned |
-| PAT-005 | patients, audit | masking views | `lib/privacy/mask` | all patient lists | `unit: mask`, `db: audit.no-pii-payload` | M3 | planned |
+| PAT-004 | patients, consent | `cross_clinic_access_grants` | — | — | `sec: medical.identity-match-no-access` | M3 | done |
+| PAT-005 | patients, audit | masking views | `lib/privacy/mask` | all patient lists | `unit: mask`, `db: audit.no-pii-payload` | M3 | partial: no PII in logs/audit; UI masking not built |
 | PAT-006 | — | — | — | — | — | — | blocked (OD-B02) |
 
 ## 3.3 Doctors, schedule, booking and queue (APT)
@@ -77,16 +77,16 @@ Conventions used below:
 
 | ID | Module | DB entities | API | UI | Tests | MS | Status |
 |---|---|---|---|---|---|---|---|
-| MED-001 | clinical | `clinical.medical_template_versions` | `action: saveTemplate` | doctor template builder | `db: templates.owner-doctor-only` | M3 | blocked (field catalog, OD-B03) — generic field types proceed |
-| MED-002 | clinical | template versions + `archived_fields` | — | consultation view | `unit: template.archived-fields` | M3 | planned |
-| MED-003 | clinical | `clinical.consultations.status`, `clinical.medical_entries.locked_at` | `rpc: complete_consultation` | consultation | `sec: medical.completed-immutable` | M3 | planned |
-| MED-004 | clinical | `clinical.medical_corrections` | `rpc: add_correction` | consultation | `db: corrections.append-only` | M3 | planned |
-| MED-005 | clinical | visit-scoped RLS | — | — | `sec: medical.owner/receptionist/admin/other-doctor-denied` | M3 | planned |
-| MED-006 | consent | `cross_clinic_access_grants`, `consent_evidence` | `route: consent link`, `rpc: grant_cross_clinic_access` | consent page | `sec: medical.cross-clinic-requires-consent` | M3 | planned (WhatsApp delivery M5) |
-| MED-007 | consent | grants `revoked_at`, completion trigger | `rpc: revoke_cross_clinic_access` | — | `sec: medical.revoked-on-completion/reassignment` | M3 | planned |
-| MED-008 | consent | read-only gateway function | `rpc: read_external_record` | external record viewer (no export) | `sec: external.no-export-endpoint` | M3 | planned |
-| MED-009 | clinical, onboarding | membership deactivation | — | — | `sec: departed-doctor-denied` | M3 | planned (custodian export blocked OD-L03) |
-| MED-010 | clinical | storage policies, access log | — | — | `sec: medical.forged-url-denied` | M3 | planned |
+| MED-001 | clinical | `clinical.medical_template_versions` | `action: saveTemplate` | doctor template builder | `db: templates.owner-doctor-only` | M3 | done (generic field types; catalog OPEN OD-B03) |
+| MED-002 | clinical | template versions + `archived_fields` | — | consultation view | `unit: template.archived-fields` | M3 | done |
+| MED-003 | clinical | `clinical.consultations.status`, `clinical.medical_entries.locked_at` | `rpc: complete_consultation` | consultation | `sec: medical.completed-immutable` | M3 | done |
+| MED-004 | clinical | `clinical.medical_corrections` | `rpc: add_correction` | consultation | `db: corrections.append-only` | M3 | done |
+| MED-005 | clinical | visit-scoped RLS | — | — | `sec: medical.owner/receptionist/admin/other-doctor-denied` | M3 | done |
+| MED-006 | consent | `cross_clinic_access_grants`, `consent_evidence` | `route: consent link`, `rpc: grant_cross_clinic_access` | consent page | `sec: medical.cross-clinic-requires-consent` | M3 | done for in-person ID verification; WhatsApp link/OTP methods with M5 |
+| MED-007 | consent | grants `revoked_at`, completion trigger | `rpc: revoke_cross_clinic_access` | — | `sec: medical.revoked-on-completion/reassignment` | M3 | done |
+| MED-008 | consent | read-only gateway function | `rpc: read_external_record` | external record viewer (no export) | `sec: external.no-export-endpoint` | M3 | done (view-only gateway; no export endpoint) |
+| MED-009 | clinical, onboarding | membership deactivation | — | — | `sec: departed-doctor-denied` | M3 | done (access ends with membership/doctor status); custodian export OPEN (OD-L03) |
+| MED-010 | clinical | storage policies, access log | — | — | `sec: medical.forged-url-denied` | M3 | done (gateway functions + metadata-only access log; no clinical attachments yet) |
 | MED-011 | — | — | — | — | — | — | blocked (OD-B03, OD-L03) |
 
 ## 3.5 Operational finance (FIN)

@@ -54,3 +54,28 @@ export async function patientIdByChart(clinicId: string, chartNumber: number): P
   if (error) throw new Error("Failed to load patient");
   return data?.id ?? null;
 }
+
+const duplicateSchema = z.object({
+  id: z.uuid(),
+  reasons: z.array(z.enum(["phone", "date_of_birth", "name", "identification"])),
+  a: z.object({ chart_number: z.number() }),
+  b: z.object({ chart_number: z.number() }),
+});
+
+/** PAT-002: open duplicate candidates (flag only; records are never merged). */
+export async function getOpenDuplicates(clinicId: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("duplicate_candidates")
+    .select(
+      "id, reasons, a:clinic_patients!duplicate_candidates_clinic_id_clinic_patient_id_fkey(chart_number), b:clinic_patients!duplicate_candidates_clinic_id_candidate_clinic_patient_id_fkey(chart_number)",
+    )
+    .eq("clinic_id", clinicId)
+    .eq("status", "open")
+    .limit(50);
+  if (error) throw new Error("Failed to load duplicates");
+  return z
+    .array(duplicateSchema)
+    .parse(data)
+    .map((d) => ({ id: d.id, reasons: d.reasons, chartA: d.a.chart_number, chartB: d.b.chart_number }));
+}

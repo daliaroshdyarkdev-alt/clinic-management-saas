@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { getAppointmentsForSessions, sortForQueue } from "@/modules/appointments/queries";
+import { getConsultationStatuses } from "@/modules/clinical/queries";
 import { getClinicDoctors, getSessionAvailability, getSessions } from "@/modules/scheduling/queries";
 import { SessionBoard, type BoardMode } from "./session-board";
 
@@ -32,6 +33,9 @@ export async function DayBoard({
     Promise.all(sessions.map((s) => (s.status === "scheduled" ? getSessionAvailability(s.id) : Promise.resolve(null)))),
   ]);
 
+  const consultations = await getConsultationStatuses(appointments.map((a) => a.id));
+  const activeDoctors = doctors.filter((d) => d.status === "active").map((d) => ({ id: d.id, name: d.display_name }));
+
   if (sessions.length === 0) return <p className="text-muted-foreground">{t("noSessions")}</p>;
 
   return (
@@ -47,6 +51,8 @@ export async function DayBoard({
           mode={mode}
           isToday={isToday}
           canDecideOverbooking={viewerIsOwner || viewerDoctorId === session.clinic_doctor_id}
+          consultations={consultations}
+          doctors={activeDoctors}
         />
       ))}
     </div>

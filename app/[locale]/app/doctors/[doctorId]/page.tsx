@@ -6,6 +6,7 @@ import { SubmitButton } from "@/components/forms/submit-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { enterRouteLocale } from "@/i18n/locale";
+import { Link } from "@/i18n/navigation";
 import { cairoToday } from "@/lib/time/dates";
 import { addScheduleException, saveSchedulingPolicy } from "@/modules/scheduling/actions";
 import { getClinicDoctors, getUpcomingExceptions, getWeeklySchedule } from "@/modules/scheduling/queries";
@@ -56,7 +57,17 @@ export default async function DoctorSettingsPage({ params }: PageProps<"/[locale
 
   return (
     <div className="grid max-w-4xl gap-6">
-      <h1 className="text-2xl font-semibold">{doctor.display_name}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-2xl font-semibold">{doctor.display_name}</h1>
+        {workspace.doctorId === doctor.id ? (
+          <Link
+            href={`/app/doctors/${doctor.id}/template`}
+            className="text-sm text-primary underline-offset-4 hover:underline"
+          >
+            {t("editTemplate")}
+          </Link>
+        ) : null}
+      </div>
 
       <Card>
         <CardHeader>

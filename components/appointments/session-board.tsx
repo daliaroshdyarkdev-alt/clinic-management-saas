@@ -13,6 +13,7 @@ import {
   registerWalkIn,
 } from "@/modules/appointments/actions";
 import type { AppointmentRow } from "@/modules/appointments/queries";
+import { openConsultation, reassignConsultation } from "@/modules/clinical/actions";
 import { cancelSession } from "@/modules/scheduling/actions";
 import type { DoctorSession } from "@/modules/scheduling/queries";
 
@@ -31,6 +32,8 @@ export async function SessionBoard({
   mode,
   isToday,
   canDecideOverbooking,
+  consultations,
+  doctors,
 }: {
   session: DoctorSession;
   doctorName: string;
@@ -40,6 +43,10 @@ export async function SessionBoard({
   mode: BoardMode;
   isToday: boolean;
   canDecideOverbooking: boolean;
+  /** Consultation per appointment id (status only, no content). */
+  consultations: Map<string, { consultationId: string; status: "draft" | "completed" }>;
+  /** Active doctors of the clinic, for reassigning an open consultation. */
+  doctors: { id: string; name: string }[];
 }) {
   const t = await getTranslations("board");
   const format = await getFormatter();
@@ -97,6 +104,35 @@ export async function SessionBoard({
                   </p>
                 </div>
                 <div className="flex flex-wrap items-start gap-2">
+                  {!desk && ["checked_in", "called", "completed"].includes(a.status) ? (
+                    <ActionForm action={openConsultation}>
+                      <input type="hidden" name="appointmentId" value={a.id} />
+                      <SubmitButton size="sm" variant={consultations.has(a.id) ? "outline" : "default"}>
+                        {consultations.get(a.id)?.status === "completed"
+                          ? t("viewConsultation")
+                          : consultations.has(a.id)
+                            ? t("continueConsultation")
+                            : t("startConsultation")}
+                      </SubmitButton>
+                    </ActionForm>
+                  ) : null}
+                  {desk && consultations.get(a.id)?.status === "draft" ? (
+                    <ActionForm action={reassignConsultation} className="flex items-center gap-2">
+                      <input type="hidden" name="consultationId" value={consultations.get(a.id)!.consultationId} />
+                      <select name="clinicDoctorId" className="h-8 rounded-md border border-input bg-background px-2">
+                        {doctors
+                          .filter((d) => d.id !== a.clinic_doctor_id)
+                          .map((d) => (
+                            <option key={d.id} value={d.id}>
+                              {d.name}
+                            </option>
+                          ))}
+                      </select>
+                      <SubmitButton size="sm" variant="outline">
+                        {t("reassign")}
+                      </SubmitButton>
+                    </ActionForm>
+                  ) : null}
                   {a.status === "awaiting_approval" && canDecideOverbooking ? (
                     <>
                       <ActionForm action={decideOverbooking}>
